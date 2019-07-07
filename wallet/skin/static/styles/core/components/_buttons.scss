@@ -8,7 +8,7 @@
         cursor: not-allowed;
         opacity: 0.42;
         background-color: #97A4AD !important;
-//      color: #7C8185 !important;
+        border: 1px solid #97a4ad;
         color: white !important;
     }
 }
@@ -64,20 +64,6 @@
     color: #fff;
     background-repeat: no-repeat;
     background-position: 24px;
-}
-.btn-fb {
-    background-image: url('../svg/ic-logo-facebook.svg');
-    background-color: #415DAE;
-    &:hover {
-        background-color: rgba(65, 93, 174, 0.8);
-    }
-}
-.btn-gg {
-    background-image: url('../svg/ic-logo-google-plus.svg');
-    background-color: #DC493C;
-    &:hover {
-        background-color: rgba(220, 73, 60, 0.8);
-    }
 }
 .btn-sm {
     padding: 4px 24px;

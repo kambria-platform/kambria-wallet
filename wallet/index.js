@@ -1,57 +1,121 @@
 import React, { Component } from 'react';
-import FiniteStateMachine from './finiteStateMachine';
 
-import SellectWallet from './skin/react/sellectWallet';
+// Heros to operate and protect Kambria Bridge
+import FiniteStateMachine from './board/finiteStateMachine';
+import Web3Factory from './board/web3Factory';
+
+// Setup CSS Module
+import classNames from 'classnames/bind';
+import styles from './skin/static/styles/index.module.css';
+var cx = classNames.bind(styles);
+
+// Global/Inherit components
+import InputPassphrase from './skin/react/core/inputPassphrase';
+import GetAuthentication from './skin/react/core/getAuthentication';
+import ErrorForm from './skin/react/core/error';
+
+// Workflow components
+import SellectType from './skin/react/sellectType';
 import InputAsset from './skin/react/inputAsset';
+import EstablishConnection from './skin/react/establishConnection';
 import ConnectDevice from './skin/react/connectDevice';
 import ConfirmAddress from './skin/react/confirmAddress';
-import InputPassphrase from './skin/react/inputPassphrase';
-import ErrorModal from './skin/react/core/error';
 
-
+// Constants
 const ERROR = 'Wallet was broken';
 const DEFAULT_STATE = {
-  step: null,
+  visible: false,
+  step: 'Idle',
   error: '',
   passphrase: false,
-  returnPassphrase: null
+  authetication: false,
+  qrcode: null,
+}
+const DEFAULT_OPT = {
+  networkId: 1,
+  restrictedNetwork: true,
+  pageRefreshing: true
 }
 
 
-class Wallet extends Component {
+class KambriaWallet extends Component {
 
   /**
-   * @props net - Chain code
+   * @props net - Network id
    * @props visible - Boolean
    * @props done - Callback function
    */
   constructor(props) {
     super(props);
 
-    this.FSM = new FiniteStateMachine();
-
     this.state = {
-      net: this.props.net ? this.props.net : 1, // mainnet as default
-      ...DEFAULT_STATE
+      ...DEFAULT_STATE,
+      step: props.visible ? this.FSM.next().step : 'Idle'
+    };
+
+    this.done = props.done;
+    this.options = { ...DEFAULT_OPT, ...props.options }
+    this.FSM = new FiniteStateMachine();
+    this.W3F = new Web3Factory(this.options.restrictedNetwork, this.options.pageRefreshing);
+
+    /**
+     * Group of global functions
+     */
+    window.kambriaWallet = { author: 'Tu Phan', git: 'https://github.com/kambria-platform/kambria-wallet' }
+    window.kambriaWallet.networkId = this.options.networkId; // mainnet as default;
+    window.kambriaWallet.getPassphrase = {
+      open: (callback) => {
+        this.setState({ passphrase: false, returnPassphrase: null }, () => {
+          this.setState({ passphrase: true, returnPassphrase: callback });
+        });
+      },
+      close: () => {
+        this.setState({ passphrase: false, returnPassphrase: null });
+      },
     }
+    window.kambriaWallet.getAuthentication = {
+      open: (qrcode, callback) => {
+        this.setState({ authetication: false, qrcode: null }, () => {
+          this.setState({ authetication: true, qrcode: qrcode, returnAuthetication: callback });
+        });
+      },
+      close: () => {
+        this.setState({ authetication: false, qrcode: null, returnAuthetication: null });
+      },
+    }
+    window.kambriaWallet.github = () => {
+      window.open('https://github.com/kambria-platform/kambria-wallet', '_blank');
+    }
+    window.kambriaWallet.term = () => {
+      window.open('https://github.com/kambria-platform/kambria-wallet/blob/master/LICENSE', '_blank');
+    }
+    window.kambriaWallet.support = () => {
+      window.open('mailto:support@kambria.io', '_blank');
+    }
+    window.kambriaWallet.back = () => {
+      let state = this.FSM.back();
+      return this.setState({ step: state.step });
+    }
+    window.kambriaWallet.logout = () => {
+      this.W3F.clearSession();
+    }
+  }
 
-    if (this.props.visible) this.setState({ step: this.FSM.next().step });
-    this.done = this.props.done;
-    this.callback = this.callback.bind(this);
-    this.endError = this.endError.bind(this);
-
-    var self = this;
-    window.GET_PASSPHRASE = function (callback) {
-      self.setState({ passphrase: false, returnPassphrase: null }, function () {
-        self.setState({ passphrase: true, returnPassphrase: callback });
+  componentDidMount() {
+    // Reconnect to wallet if still maintaining
+    this.W3F.isSessionMaintained(session => {
+      if (session) this.W3F.regenerate(session, (er, provider) => {
+        if (er) return;
+        window.kambriaWallet.provider = provider;
+        return this.done(null, provider);
       });
-    }
+    });
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.visible !== prevProps.visible) {
-      if (this.props.visible) this.setState({ step: this.FSM.next().step });
-      else this.setState(DEFAULT_STATE);
+      if (this.props.visible) return this.setState({ visible: true, step: this.FSM.next().step });
+      return this.setState({ ...DEFAULT_STATE });
     }
   }
 
@@ -59,43 +123,62 @@ class Wallet extends Component {
    * Flow management
    */
 
-  callback(er, re) {
-    let self = this;
-    if (er) return this.setState({ error: er, step: 'Error' }, () => {
-      self.FSM.reset();
-    });
-    if (!re) return this.FSM.reset(); // Use skip the registration.
+  onData = (er, re) => {
+    // User meets error in processing
+    if (er) return this.onError(er);
+
+    // Heros are working :)
+    // Move to next step
     let state = this.FSM.next(re);
-    if (state.step === 'Error') {
-      return this.setState({ error: ERROR, step: state.step }, () => {
-        self.FSM.reset();
+
+    // Run to next step
+    // Error case
+    if (state.step === 'Error') return this.onError(ERROR);
+    // Success case
+    if (state.step === 'Success') return this.onClose(() => {
+      this.W3F.generate(state, (er, provider) => {
+        if (er) return this.onError(er);
+        window.kambriaWallet.provider = provider;
+        return this.done(null, provider);
       });
-    }
-    if (state.step === 'Success') return this.setState({ step: state.step }, () => {
-      self.done(null, state.provider);
-      self.FSM.reset();
     });
+    // Still in processing
     return this.setState({ step: state.step });
   }
 
-  endError() {
-    this.done(this.state.error, null);
-    this.FSM.reset();
+  onError = (er) => {
+    return this.setState({ visible: true, error: er, step: 'Error' }, () => {
+      this.FSM.reset();
+    });
+  }
+
+  onClose = (callback) => {
+    this.setState({ visible: true }, () => {
+      this.setState({ visible: false }, () => {
+        this.setState({ ...DEFAULT_STATE }, () => {
+          this.FSM.reset();
+        });
+        if (callback) callback();
+      });
+    });
   }
 
   render() {
     return (
       <div>
-        <SellectWallet visible={this.state.step === 'SelectWallet' && !this.state.passphrase} data={{ ...this.FSM.data, net: this.state.net }} done={this.callback} />
-        <InputAsset visible={this.state.step === 'InputAsset' && !this.state.passphrase} data={{ ...this.FSM.data, net: this.state.net }} done={this.callback} />
-        <ConnectDevice visible={this.state.step === 'ConnectDevice' && !this.state.passphrase} data={{ ...this.FSM.data, net: this.state.net }} done={this.callback} />
-        <ConfirmAddress visible={this.state.step === 'ConfirmAddress' && !this.state.passphrase} data={{ ...this.FSM.data, net: this.state.net }} done={this.callback} />
-        <InputPassphrase visible={this.state.passphrase} done={(er, re) => { this.state.returnPassphrase(er, re) }} />
-        <ErrorModal visible={this.state.step === 'Error' && !this.state.passphrase} error={this.state.error} done={this.endError} />
+        {this.state.step === 'SelectWallet' ? <SellectType data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
+        {this.state.step === 'InputAsset' ? <InputAsset data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
+        {this.state.step === 'EstablishConnection' ? <EstablishConnection data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
+        {this.state.step === 'ConnectDevice' ? <ConnectDevice data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
+        {this.state.step === 'ConfirmAddress' ? <ConfirmAddress data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
+        {this.state.step === 'Error' ? <ErrorForm error={this.state.error} done={() => this.onClose(() => { this.done(this.state.error, null) })} /> : null}
+
+        <InputPassphrase visible={this.state.passphrase} done={(er, re) => this.state.returnPassphrase(er, re)} />
+        <GetAuthentication visible={this.state.authetication} qrcode={this.state.qrcode} done={(er, re) => this.state.returnAuthetication(er, re)} />
       </div>
-    )
+    );
   }
 
 }
 
-export default Wallet; 
+export default KambriaWallet; 
