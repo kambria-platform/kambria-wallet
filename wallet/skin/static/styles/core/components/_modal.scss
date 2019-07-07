@@ -39,37 +39,6 @@
       resize: vertical;
     }
   }
-  .file-upload {
-    background-color: #F4F4F4;
-    background-image: url(../svg/ic-upload.svg);
-    background-repeat: no-repeat;
-    width: 100%;
-    height: 100%;
-    margin: auto;
-    padding-top: 64px;
-    text-align: center;
-    font-size: 14px;
-    line-height: 14px;
-    display: block;
-    color: rgba(40, 47, 57, 0.7);
-    border-radius: 10px;
-    border: 1px dashed #d8d8d8;
-    background-position: center 36%;
-    label {
-      background: transparent;
-      position: relative;
-      line-height: 36px;
-      color: gray;
-      width: 100%;
-      border-bottom-right-radius: .3rem;
-      border-bottom-left-radius: .3rem;
-      font-size: 16px;
-      &:hover {
-        opacity: 0.7;
-        cursor: pointer;
-      }
-    }
-  }
   table {
     width: 100%;
     tr {
@@ -133,36 +102,34 @@
       }
     }
   }
-  .wallet-content {
-    float: right;
-    display: block;
-    width: 580px;
-    padding: 10px 20px 20px;
-    background-color: #F4F4F4;
-    border: 1px solid #9B9B9B;
-    border-radius: 8px;
-    border-top-left-radius: 0;
-    color: $c-semi-black;
-    .type {
-      background-repeat: no-repeat;
-      background-size: contain;
-      background-position: left center;
-      padding-left: 28px;
-      &.recommended {
-        background-image: url('../svg/ic-round-check.svg')
-      }
-      &.not-recommended {
-        background-image: url('../svg/ic-round-warning.svg')
-      }
-    }
+  .qr-code {
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 200px;
+    height: 200px;
+  }
+  .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+    color: #1F252E;
+    background-color: #F2F2F2;
+    border-color: #E9E9E9 #E9E9E9 transparent;
+    position: relative;
+    bottom: -4px;
+  }
+  .tab-content {
+    background-color: #F2F2F2;
+    color: #1F252E;
+    padding: 16px;
+    border-radius: 4px;
+    border-top-right-radius: 0;
+    border: 1px solid #E9E9E9;
   }
   .wallets {
     overflow: hidden;
     margin: 0 auto;
-    width: 560px;
+    width: max-content;
     .vl {
       border-left: 1px solid #E4E4E4;
-      height: 154px;
+      height: 168px;
       position: absolute;
       margin-left: -3px;
       top: 130px;
@@ -184,37 +151,81 @@
         height: 100%;
         display: block;
       }
-      .btn.btn-primary.btn-sm {
+      .btn.btn-gray.btn-sm {
         padding: 4px 8px;
         margin: auto;
+        margin-top: 16px;
         display: block;
+        width: 164px;
       }
       &.metamask {
         margin-right: 24px;
         .icon {
-          background-image: url(../images/icon-metamask.png);
+          background-image: url(../images/metamask.png);
         }
       }
       &.hardware {
         margin-right: 24px;
         .icon {
-          background-image: url(../images/icon-hardware-wallet.png);
+          background-image: url(../images/hw-wallet.png);
+        }
+      }
+      &.hybrid {
+        margin-right: 24px;
+        .icon {
+          margin-left: 38px;
+          background-image: url(../images/hybrid-wallet.png);
         }
       }
       &.software {
         .icon {
-          background-image: url(../images/icon-software-wallet.png);
+          background-image: url(../images/sw-wallet.png);
         }
       }
     }  
   }
   &.choose-wallet {
     .modal-content {
-      width: 720px;
-      min-width: 720px;
+      width: 786px;
+      position: relative;
     }
     .modal-dialog {
-      max-width: 720px;
+      max-width: 786px;
+    }
+    .network {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      color: #4F93DC;
+      background-image: url(../images/rinkeby.png);
+      background-repeat: no-repeat;
+      background-size: 14px;
+      background-position: center left;
+      height: 24px;
+      width: max-content;
+      padding-left: 24px;
+    }
+    .github, .term, .support {
+      color: #4F93DC;
+      background-repeat: no-repeat;
+      background-size: 16px;
+      background-position-y: center;
+      background-position-x: left;
+      height: 22px;
+      width: max-content;
+      padding-left: 24px;
+    }
+    .github {
+      bottom: 66px;
+      background-image: url(../images/github.png);
+    }
+    .term {
+      bottom: 44px;
+      background-image: url(../images/term.png);
+    }
+    .support {
+      bottom: 22px;
+      background-image: url(../images/support.png);
     }
   }
   &.choose-wallet-address, &.enter-passphrase, &.confirm-wallet-address {
@@ -241,6 +252,7 @@
       overflow-y: scroll;
       background-color: #F4F4F4;
       padding: 12px;
+      margin-bottom: 12px;
       label {
         color: #1F252E;
         font-size: 16px;
@@ -268,17 +280,301 @@
 /* Responsive */
 // Extra small devices (portrait phones, less than 576px)
 @media (max-width: 575px) {
-
+  .wallet-modal {
+    &.enter-passphrase {
+      .form-group {
+        width: 100%;
+      }
+      input {
+        width: 100% !important;
+      }
+      button.btn.btn-primary.btn-sm {
+        margin-top: 16px;
+      }
+    }
+    &.choose-wallet {
+      .modal-content {
+        width: 320px;
+        position: relative;
+      }
+      .modal-dialog {
+        max-width: 320px;
+        margin: auto;
+      }
+      .wallets {
+        overflow: auto;
+        margin: 0 auto;
+        width: 100%;
+        padding: 0 22px;
+        .vl {
+          display: none !important;
+        }
+        .wallet {
+          position: relative;
+          float: left;
+          display: block;
+          width: max-content;
+          .icon {
+            width: 58px;
+            height: 58px;
+            background-repeat: no-repeat;
+            background-size: contain;
+            margin: auto;
+          }
+          a {
+            width: 100%;
+            height: 100%;
+            display: block;
+          }
+          .btn.btn-gray.btn-sm {
+            width: 100px;
+            font-size: 10px;
+          }
+          &.metamask {
+            border-right: 1px solid #E4E4E4;
+            border-bottom: 1px solid #E4E4E4;
+            padding-right: 20px;
+            padding-bottom: 20px;
+            margin-right: 0 !important;
+            .icon {
+            }
+          }
+          &.hardware {
+            border-bottom: 1px solid #E4E4E4;
+            padding-left: 20px;
+            padding-bottom: 20px;
+            margin-right: 0 !important;
+            .icon {
+            }
+          }
+          &.hybrid {
+            border-right: 1px solid #E4E4E4;
+            padding-right: 20px;
+            padding-top: 20px;
+            margin-right: 0 !important;
+            .icon {
+              margin-left: 28px !important;
+            }
+            &:after {
+              clear: left;
+            }
+          }
+          &.software {
+            padding-top: 20px;
+            padding-left: 20px;
+            .icon {
+            }
+          }
+        }  
+      }
+      .network {
+      }
+      .github, .term, .support {
+        position: relative !important;
+        margin: 0 !important;
+        bottom: -36px !important;
+      }
+      .github {
+      }
+      .term {
+      }
+      .support {
+      }
+      .skip-txt, .skip-btn {
+        width: 100%;
+        clear: both;
+      }
+    }
+  }
 }
 
 // Small devices (landscape phones, less than 768px)
 @media (min-width: 576px) and (max-width: 767px) {
-
+  .wallet-modal {
+    &.enter-passphrase {
+      .form-group {
+        width: 100%;
+      }
+      input {
+        width: 100% !important;
+      }
+      button.btn.btn-primary.btn-sm {
+        margin-top: 16px;
+      }
+    }
+    &.choose-wallet {
+      .modal-content {
+        width: 540px;
+        position: relative;
+      }
+      .modal-dialog {
+        max-width: 540px;
+      }
+      .wallets {
+        overflow: auto;
+        margin: 0 auto;
+        width: 100%;
+        padding: 0 65px;
+        .vl {
+          display: none !important;
+        }
+        .wallet {
+          position: relative;
+          float: left;
+          display: block;
+          width: max-content;
+          .icon {
+            width: 116px;
+            height: 116px;
+            background-repeat: no-repeat;
+            background-size: contain;
+            margin: auto;
+          }
+          a {
+            width: 100%;
+            height: 100%;
+            display: block;
+          }
+          .btn.btn-gray.btn-sm {
+          }
+          &.metamask {
+            border-right: 1px solid #E4E4E4;
+            border-bottom: 1px solid #E4E4E4;
+            padding-right: 20px;
+            padding-bottom: 20px;
+            margin-right: 0 !important;
+            .icon {
+            }
+          }
+          &.hardware {
+            border-bottom: 1px solid #E4E4E4;
+            padding-left: 20px;
+            padding-bottom: 20px;
+            margin-right: 0 !important;
+            .icon {
+            }
+          }
+          &.hybrid {
+            border-right: 1px solid #E4E4E4;
+            padding-right: 20px;
+            padding-top: 20px;
+            margin-right: 0 !important;
+            .icon {
+              margin-left: 40px !important;
+            }
+            &:after {
+              clear: left;
+            }
+          }
+          &.software {
+            padding-top: 20px;
+            padding-left: 20px;
+            .icon {
+            }
+          }
+        }  
+      }
+      .network {
+      }
+      .github, .term, .support {
+      }
+      .github {
+      }
+      .term {
+      }
+      .support {
+      }
+    }
+  }
 }
 
 // Medium devices (tablets, less than 992px)
 @media (min-width: 768px) and (max-width: 991px) {
-
+  .wallet-modal {
+    &.choose-wallet {
+      .modal-content {
+        width: 640px;
+        position: relative;
+      }
+      .modal-dialog {
+        max-width: 640px;
+      }
+      .wallets {
+        overflow: auto;
+        margin: 0 auto;
+        width: 100%;
+        padding: 0 115px;
+        .vl {
+          display: none !important;
+        }
+        .wallet {
+          position: relative;
+          float: left;
+          display: block;
+          width: max-content;
+          .icon {
+            width: 116px;
+            height: 116px;
+            background-repeat: no-repeat;
+            background-size: contain;
+            margin: auto;
+          }
+          a {
+            width: 100%;
+            height: 100%;
+            display: block;
+          }
+          .btn.btn-gray.btn-sm {
+          }
+          &.metamask {
+            border-right: 1px solid #E4E4E4;
+            border-bottom: 1px solid #E4E4E4;
+            padding-right: 20px;
+            padding-bottom: 20px;
+            margin-right: 0 !important;
+            .icon {
+            }
+          }
+          &.hardware {
+            border-bottom: 1px solid #E4E4E4;
+            padding-left: 20px;
+            padding-bottom: 20px;
+            margin-right: 0 !important;
+            .icon {
+            }
+          }
+          &.hybrid {
+            border-right: 1px solid #E4E4E4;
+            padding-right: 20px;
+            padding-top: 20px;
+            margin-right: 0 !important;
+            .icon {
+              margin-left: 40px !important;
+            }
+            &:after {
+              clear: left;
+            }
+          }
+          &.software {
+            padding-top: 20px;
+            padding-left: 20px;
+            .icon {
+            }
+          }
+        }  
+      }
+      .network {
+      }
+      .github, .term, .support {
+      }
+      .github {
+      }
+      .term {
+      }
+      .support {
+      }
+    }
+  }
 }
 
 // Large devices (desktops, less than 1200px)

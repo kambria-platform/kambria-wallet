@@ -1,10 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 // Setup CSS Module
 import classNames from 'classnames/bind';
-import style from 'Style/index.scss';
-var cx = classNames.bind(style);
+import styles from '../../static/styles/index.module.css';
+var cx = classNames.bind(styles);
 
 let modalsShowing = 0;
 
@@ -25,24 +24,6 @@ function modalWillHide() {
 }
 
 class Modal extends React.Component {
-  static propTypes = {
-    children: PropTypes.node.isRequired,
-    onClickBackdrop: PropTypes.func,
-    visible: PropTypes.bool.isRequired,
-    wrapperProps: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-    className: PropTypes.string,
-    dialogClassName: PropTypes.string,
-    fade: PropTypes.bool,
-  };
-
-  static defaultProps = {
-    onClickBackdrop: null,
-    wrapperProps: null,
-    className: null,
-    dialogClassName: null,
-    fade: true,
-  };
-
   constructor(props) {
     super(props);
 
@@ -58,7 +39,6 @@ class Modal extends React.Component {
     }
   }
 
-  // Shenanigans to allow the CSS fade to happen before we stop rendering the dialog or divs
   componentDidUpdate = (prevProps) => {
     if (this.props.visible !== prevProps.visible) {
       if (this.props.visible) {
@@ -67,17 +47,7 @@ class Modal extends React.Component {
         modalWillHide();
       }
 
-      if (this.props.fade) {
-        this.setState({ transitioning: true, modalIndex: modalsShowing }, () => {
-          window.setTimeout(() => {
-            this.setState({ visible: this.props.visible }, () => {
-              window.setTimeout(() => { this.setState({ transitioning: false }); }, 150);
-            });
-          }, 16); // I don't like this magic number but I haven't found a better way
-        });
-      } else {
-        this.setState({ visible: this.props.visible });
-      }
+      this.setState({ visible: this.props.visible });
     }
   }
 
@@ -95,7 +65,7 @@ class Modal extends React.Component {
     if (this.state.visible || this.state.transitioning) {
       return (
         <div
-          className={cx('modal-backdrop', { show: this.state.visible, fade: this.props.fade })}
+          className={cx('modal-backdrop', { show: this.state.visible })}
           onClick={this.props.onClickBackdrop}
           role="presentation"
           style={{ zIndex: 1040 + this.state.modalIndex }}
@@ -114,18 +84,15 @@ class Modal extends React.Component {
       visible,
       onClickBackdrop,
       children,
-      fade,
       ...other
     } = this.props;
 
     return (
-      <div
-        {...wrapperProps}
-      >
+      <div {...wrapperProps} >
         <div
-          className={cx('modal', { show: this.state.visible, fade: this.props.fade }, className)}
+          className={cx("modal", { show: this.state.visible }, className)}
           style={{
-            display: ((this.state.visible || this.state.transitioning) ? 'block' : 'none'),
+            display: ((this.state.visible || this.state.transitioning) ? "block" : "none"),
             zIndex: 1040 + this.state.modalIndex + 1,
           }}
           role="dialog"
@@ -134,10 +101,8 @@ class Modal extends React.Component {
           onClick={onClickBackdrop}
           {...other}
         >
-          <div className={cx('modal-dialog', dialogClassName)} role="document" onClick={this.stopPropagation}>
-            <div className={cx("modal-content")}>
-              {children}
-            </div>
+          <div className={cx("modal-dialog", dialogClassName)} role="document" onClick={this.stopPropagation}>
+            <div className={cx("modal-content", "shadow-lg")}> {children} </div>
           </div>
         </div>
         {this.renderBackdrop()}
