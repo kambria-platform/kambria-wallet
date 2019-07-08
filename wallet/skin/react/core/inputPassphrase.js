@@ -87,7 +87,6 @@ class InputPassphrase extends Component {
                 ref={(name) => { this.passpharseName = name; }}
               />
               <button
-                style={{ padding: "8px 32px" }}
                 className={cx("btn", "btn-primary", "btn-sm", "col-3")}
                 onClick={this.handleSubmit}
               >OK</button>

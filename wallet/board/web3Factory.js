@@ -18,7 +18,7 @@ class Web3Factory {
   }
 
   clearSession = () => {
-    this.SM.clearState(true);
+    this.SM.clearState();
   }
 
   generate = (fmState, callback) => {

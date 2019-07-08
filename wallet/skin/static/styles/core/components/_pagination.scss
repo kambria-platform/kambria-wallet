@@ -1,0 +1,28 @@
+.pagination {
+  .page-item {
+    margin-right: 12px !important;
+    &:last-child {
+      margin-right: 0 !important;
+    }
+    .page-link {
+      border-radius: 8px !important;
+      border-color: $c-semi-black !important;
+      background-color: $c-semi-black !important;
+      color: white !important;
+      padding: 4px 12px !important;
+      font-size: 20px !important;
+      &:hover {
+        background-color: $c-base !important;
+        border-color: $c-base !important;
+        color: $c-semi-black !important;
+      }
+    }
+    &.active {
+      .page-link {
+        background-color: $c-base !important;
+        border-color: $c-base !important;
+        color: $c-semi-black !important;
+      }
+    }
+  }
+}
