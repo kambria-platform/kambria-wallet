@@ -9,7 +9,7 @@ var cx = classNames.bind(styles);
 
 const STATUS = {
   INIT: 'Please using MyEtherWallet application on your phone to scan and establish the connection!',
-  TEST: 'Waiting for the connection',
+  TEST: 'Waiting for the connection...',
   FAIL: 'Cannot connect the devide!'
 }
 

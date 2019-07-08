@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Helper from './helper';
 
 import Modal from '../core/modal';
+import PageLoader from '../core/PageLoader';
 
 // Setup CSS Module
 import classNames from 'classnames/bind';
@@ -160,18 +161,19 @@ class ConfirmAddress extends Component {
             type="text"
             value={this.state.dpath}
             onChange={this.onDpath} />
+          {this.state.loading ? <PageLoader type="bar" /> : null}
           <div className={cx("addresses")}>
             {this.showAddresses(this.state.i, this.state.addressList)}
           </div>
           <button
             className={cx("d-inline", "text-left", "mr-1", "btn", "btn-primary-gray", "btn-sm")}
-            onClick={() => { this.onPage(-1) }}>Prev</button>
+            onClick={() => { this.onPage(-1) }}>{"<"}</button>
           <button
             className={cx("d-inline", "text-left", "mr-1", "btn", "btn-primary-gray", "btn-sm")}
           >{this.state.page + 1}</button>
           <button
             className={cx("d-inline", "text-left", "mr-1", "btn", "btn-primary-gray", "btn-sm")}
-            onClick={() => { this.onPage(1) }}>Next</button>
+            onClick={() => { this.onPage(1) }}>{">"}</button>
           <button
             className={cx("d-inline", "text-left", "float-right", "btn", "btn-primary", "btn-sm")}
             onClick={this.onConfirm}

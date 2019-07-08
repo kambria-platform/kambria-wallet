@@ -8,7 +8,7 @@ var cx = classNames.bind(styles);
 
 const STATUS = {
   INIT: 'Please connecting your wallet and click the button!',
-  TEST: 'Waiting for the connection',
+  TEST: 'Waiting for the connection...',
   FAIL: 'Cannot connect your wallet!'
 }
 
@@ -40,7 +40,7 @@ class LedgerNanoSAsset extends Component {
     return (
       <div className={cx("tab-pane", "fade", "show", "active")}>
         <p
-          className={cx("d-block", "text-center", "mt-5", "mb-3")}
+          className={cx("d-block", "text-center", "mt-5", "mb-3", { "text-danger": this.state.message === STATUS.FAIL })}
           style={{ fontSize: "16px", lineHeight: "18px" }}
         >{this.state.message}</p>
         <button

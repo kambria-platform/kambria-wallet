@@ -68,7 +68,7 @@ class ConnectDevice extends Component {
             className={cx("position-absolute")}
             style={{ cursor: "pointer", color: "black", top: "12px", left: "12px" }}
             onClick={window.kambriaWallet.back}><i className={cx("fas", "fa-arrow-left")}></i> Back</span>
-          <p className={cx("d-block", "text-center", "mb-4")} style={{ color: "green", fontSize: "16px", lineHeight: "18px" }}>This is a recommended way to access your wallet.</p>
+          <p className={cx("d-block", "text-center", "mb-4", "text-success")} style={{ fontSize: "16px", lineHeight: "18px" }}>This is a recommended way to access your wallet.</p>
           {this.menu()}
           <div className={cx("tab-content")}>
             {this.device()}
