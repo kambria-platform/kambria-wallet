@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Link, Switch, Redirect } from 'react-router-dom';
 
-import Wallet from 'containers/wallet';
-
-const margin = { marginRight: 1 + 'em' };
+import TestWallet from './testWallet';
 
 class App extends Component {
   render() {
@@ -11,12 +9,12 @@ class App extends Component {
       <BrowserRouter>
         <div>
           <header>
-            <Link style={margin} to='/wallet'>Wallet</Link>
+            <Link to='/test-wallet'>Test Wallet</Link>
           </header>
           <main>
             <Switch>
-              <Redirect exact from='/' to='/wallet' />
-              <Route exact path='/wallet' component={Wallet} />
+              <Redirect exact from='/' to='/test-wallet' />
+              <Route exact path='/test-wallet' component={TestWallet} />
             </Switch>
           </main>
         </div>

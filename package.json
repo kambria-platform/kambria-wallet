@@ -1,18 +1,27 @@
 {
   "name": "@kambria/kambria-wallet",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "release": "npm run build && npm publish",
-    "start": "HTTPS=true REACT_APP_ENV=development react-scripts start",
-    "clean": "rm -rf ./index.js && rm -rf ./node_modules/@kambria/kambria-wallet",
-    "build": "npm run clean && webpack && npm run fake-module",
-    "fake-module": "mkdir -p ./node_modules/@kambria/kambria-wallet && cp -R ./index.js ./node_modules/@kambria/kambria-wallet",
-    "test": "npm run build && HTTPS=true REACT_APP_ENV=development react-scripts start"
+    "build": "npm run clean && npm run build-js && npm run build-static && npm run build-css",
+    "build-js": "babel wallet -d dist && babel main.js -o index.js",
+    "build-static": "mkdir -p ./dist/skin/static && cp -R ./wallet/skin/static/images ./dist/skin/static/images",
+    "build-css": "sass ./wallet/skin/static/styles/index.scss ./dist/skin/static/styles/index.module.css",
+    "clean": "rm -rf index.js && rm -rf dist && rm -rf ./node_modules/@kambria/kambria-wallet",
+    "start": "nodemon --exec 'npm run build && npm run fake-module && npm run serve'",
+    "serve": "HTTPS=true REACT_APP_ENV=development react-scripts start",
+    "fake-module": "mkdir -p ./node_modules/@kambria/kambria-wallet && cp -R ./index.js ./node_modules/@kambria/kambria-wallet && cp -R ./dist ./node_modules/@kambria/kambria-wallet",
+    "test": ""
   },
   "author": "tphanson <tphanson@kambria.io>",
   "license": "ISC",
+  "dependencies": {
+    "capsule-core-js": "^1.0.8",
+    "classnames": "^2.2.6",
+    "qrcode.react": "^0.9.3"
+  },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
@@ -20,11 +29,12 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
     "@babel/preset-env": "^7.3.1",
     "@babel/preset-react": "^7.0.0",
-    "prop-types": "^15.7.1",
+    "nodemon": "^1.18.10",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "^2.1.1"
+    "react-scripts": "^2.1.1",
+    "sass": "^1.22.3"
   },
   "browserslist": [
     ">0.2%",

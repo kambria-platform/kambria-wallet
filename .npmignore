@@ -3,4 +3,7 @@
 /src
 /public
 /main.js
+/nodemon.json
 .npmrc
+.env
+.DS_Store

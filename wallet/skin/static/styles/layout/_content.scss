@@ -1,0 +1,38 @@
+/* ==========================================================================
+Content
+========================================================================== */
+body,
+html {
+  height: 100%;
+  overflow: hidden;
+}
+#root {
+  height: 100%;
+  overflow: auto;
+}
+
+#site_wrapper {
+  min-height: 100%;
+  @include flexbox;
+  @include flex-flow(column nowrap);
+  background-color: $c-semi-black;
+}
+.main {
+  @include flex(1);
+  min-height: 100vh;
+//  padding-bottom: 30px;
+}
+
+section {
+  h2.heading {
+    color: #f4f8f9;
+    font-size: 28px;
+    margin-top: 58px;
+    a {
+      color: #f4f8f9;
+    }
+  }
+  .sub-heading {
+    color: #97a4ad;
+  }
+}
