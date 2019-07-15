@@ -66,6 +66,7 @@ const MACHINE = {
 /**
  * Class
  */
+
 const DEFAULT = {
   step: STATE[0],
   blockchain: 'binance',

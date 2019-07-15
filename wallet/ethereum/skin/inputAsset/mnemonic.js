@@ -53,13 +53,13 @@ class MnemonicAsset extends Component {
     return (
       <div className={cx("tab-pane", "fade", "show", "active")}>
         <div className={cx("form-group")}>
-          <label htmlFor="enter-seed">Enter seed</label>
+          <label htmlFor="enter-seed">Enter mnemonic</label>
           <input
             className={cx("form-control")}
             type="text"
             autoComplete="off"
             id="enter-seed"
-            placeholder="Seed"
+            placeholder="Mnemonic"
             value={this.state.mnemonic}
             onChange={this.handleChangeMnemonic} />
         </div>

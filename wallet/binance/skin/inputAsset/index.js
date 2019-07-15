@@ -11,7 +11,7 @@ import styles from '../../../static/styles/index.module.css';
 var cx = classNames.bind(styles);
 
 const MENU = [
-  { key: 'mnemonic', label: 'Seed' },
+  { key: 'mnemonic', label: 'Mnemonic' },
   { key: 'keystore', label: 'Keystore' },
   { key: 'private-key', label: 'Private Key' },
 ];

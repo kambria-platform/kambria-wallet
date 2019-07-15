@@ -10,6 +10,7 @@ import ErrorForm from '../core/error';
 // Workflow components
 import SelectWallet from './skin/selectWallet';
 import InputAsset from './skin/inputAsset';
+import ConfirmAddress from './skin/confirmAddress';
 
 // Constants
 const ERROR = 'Wallet was broken';
@@ -128,6 +129,7 @@ class Binance extends Component {
       <Fragment>
         {this.state.step === 'SelectWallet' ? <SelectWallet data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
         {this.state.step === 'InputAsset' ? <InputAsset data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
+        {this.state.step === 'ConfirmAddress' ? <ConfirmAddress data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
         {this.state.step === 'Error' ? <ErrorForm error={this.state.error} done={() => this.onClose(() => { this.done(this.state.error, null) })} /> : null}
       </Fragment>
     );

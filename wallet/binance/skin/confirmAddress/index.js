@@ -11,7 +11,7 @@ var cx = classNames.bind(styles);
 
 const ERROR = 'Cannot load addresses';
 const LIMIT = 5, PAGE = 0;
-const DEFAULT_HD_PATH = "m/44'/60'/0'/0";
+const DEFAULT_HD_PATH = "m/44'/714'/0'/0";
 
 const DEFAULT_STATE = {
   addressList: [],
@@ -53,8 +53,8 @@ class ConfirmAddress extends Component {
       }
     }
 
-    if (data.wallet === 'isoxys') {
-      Helper.getAddressByIsoxys(data, this.state.dpath, limit, page).then(re => {
+    if (data.wallet === 'binance-sdk') {
+      Helper.getAddressByBinanceSDK(data, this.state.dpath, limit, page).then(re => {
         return _callback(null, re);
       }).catch(er => {
         if (er) return _callback(ERROR, null);
@@ -62,13 +62,6 @@ class ConfirmAddress extends Component {
     }
     else if (data.wallet === 'ledger') {
       Helper.getAddressByLedger(data, this.state.dpath, limit, page).then(re => {
-        return _callback(null, re);
-      }).catch(er => {
-        if (er) return _callback(ERROR, null);
-      });
-    }
-    else if (data.wallet === 'trezor') {
-      Helper.getAddressByTrezor(data, this.state.dpath, limit, page).then(re => {
         return _callback(null, re);
       }).catch(er => {
         if (er) return _callback(ERROR, null);
@@ -137,7 +130,7 @@ class ConfirmAddress extends Component {
           key={item.address}
           className={cx("radio-wrapper")}
           onChange={() => this.onSelect(index)}>
-          {item.address} <br /> {item.balance} ETH
+          {item.address} <br /> {item.balance} BNB
           <input type="radio" name="address" value={item.address} checked={index === defaultIndex} readOnly />
           <span className={cx("checkmark")}></span>
         </label>
