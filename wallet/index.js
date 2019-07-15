@@ -1,32 +1,22 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
+import StateMaintainer from './stateMaintainer';
 
-// Heros to operate and protect Kambria Bridge
-import FiniteStateMachine from './board/finiteStateMachine';
-import Web3Factory from './board/web3Factory';
+import Modal from './core/modal';
+import Ethereum from './ethereum';
+import Binance from './binance';
+import InputPassphrase from './core/inputPassphrase';
+import GetAuthentication from './core/getAuthentication';
 
 // Setup CSS Module
 import classNames from 'classnames/bind';
-import styles from './skin/static/styles/index.module.css';
+import styles from './static/styles/index.module.css';
 var cx = classNames.bind(styles);
 
-// Global/Inherit components
-import InputPassphrase from './skin/react/core/inputPassphrase';
-import GetAuthentication from './skin/react/core/getAuthentication';
-import ErrorForm from './skin/react/core/error';
-
-// Workflow components
-import SellectType from './skin/react/sellectType';
-import InputAsset from './skin/react/inputAsset';
-import EstablishConnection from './skin/react/establishConnection';
-import ConnectDevice from './skin/react/connectDevice';
-import ConfirmAddress from './skin/react/confirmAddress';
-
 // Constants
-const ERROR = 'Wallet was broken';
 const DEFAULT_STATE = {
   visible: false,
-  step: 'Idle',
-  error: '',
+  blockchain: null,
+  background: false,
   passphrase: false,
   authetication: false,
   qrcode: null,
@@ -39,30 +29,31 @@ const DEFAULT_OPT = {
 
 
 class KambriaWallet extends Component {
-
-  /**
-   * @props net - Network id
-   * @props visible - Boolean
-   * @props done - Callback function
-   */
   constructor(props) {
     super(props);
 
-    this.state = {
-      ...DEFAULT_STATE,
-      step: props.visible ? this.FSM.next().step : 'Idle'
-    };
-
     this.done = props.done;
     this.options = { ...DEFAULT_OPT, ...props.options }
-    this.FSM = new FiniteStateMachine();
-    this.W3F = new Web3Factory(this.options.restrictedNetwork, this.options.pageRefreshing);
+
+    this.state = {
+      ...DEFAULT_STATE,
+      visible: props.visible
+    }
 
     /**
      * Group of global functions
      */
     window.kambriaWallet = { author: 'Tu Phan', git: 'https://github.com/kambria-platform/kambria-wallet' }
     window.kambriaWallet.networkId = this.options.networkId; // mainnet as default;
+    window.kambriaWallet.github = () => {
+      window.open('https://github.com/kambria-platform/kambria-wallet', '_blank');
+    }
+    window.kambriaWallet.term = () => {
+      window.open('https://github.com/kambria-platform/kambria-wallet/blob/master/LICENSE', '_blank');
+    }
+    window.kambriaWallet.support = () => {
+      window.open('mailto:support@kambria.io', '_blank');
+    }
     window.kambriaWallet.getPassphrase = {
       open: (callback) => {
         this.setState({ passphrase: false, returnPassphrase: null }, () => {
@@ -83,102 +74,95 @@ class KambriaWallet extends Component {
         this.setState({ authetication: false, qrcode: null, returnAuthetication: null });
       },
     }
-    window.kambriaWallet.github = () => {
-      window.open('https://github.com/kambria-platform/kambria-wallet', '_blank');
-    }
-    window.kambriaWallet.term = () => {
-      window.open('https://github.com/kambria-platform/kambria-wallet/blob/master/LICENSE', '_blank');
-    }
-    window.kambriaWallet.support = () => {
-      window.open('mailto:support@kambria.io', '_blank');
-    }
-    window.kambriaWallet.back = () => {
-      let state = this.FSM.back();
-      return this.setState({ step: state.step });
-    }
-    window.kambriaWallet.logout = () => {
-      this.W3F.clearSession();
-    }
+  }
+
+  selectBlockchain = (blockchain) => {
+    this.setState({ ...DEFAULT_STATE }, () => {
+      if (!blockchain) return this.setState({ visible: true });
+      return this.setState({ visible: false, blockchain: blockchain });
+    });
+  }
+
+  onClose = () => {
+    this.setState({ ...DEFAULT_STATE }, () => {
+      this.done(null, null);
+    });
   }
 
   componentDidMount() {
-    // Reconnect to wallet if still maintaining
-    this.W3F.isSessionMaintained(session => {
-      if (session) this.W3F.regenerate(session, (er, provider) => {
-        if (er) return;
-        window.kambriaWallet.provider = provider;
-        return this.done(null, provider);
-      });
-    });
+    if (this.options.pageRefreshing) {
+      let state = StateMaintainer.getState();
+      if (state.blockchain) this.setState({ background: true, blockchain: state.blockchain });
+    }
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.visible !== prevProps.visible) {
-      if (this.props.visible) return this.setState({ visible: true, step: this.FSM.next().step });
-      return this.setState({ ...DEFAULT_STATE });
+      this.setState({ ...DEFAULT_STATE }, () => {
+        this.setState({ visible: this.props.visible });
+      });
     }
-  }
-
-  /**
-   * Flow management
-   */
-
-  onData = (er, re) => {
-    // User meets error in processing
-    if (er) return this.onError(er);
-
-    // Heros are working :)
-    // Move to next step
-    let state = this.FSM.next(re);
-
-    // Run to next step
-    // Error case
-    if (state.step === 'Error') return this.onError(ERROR);
-    // Success case
-    if (state.step === 'Success') return this.onClose(() => {
-      this.W3F.generate(state, (er, provider) => {
-        if (er) return this.onError(er);
-        window.kambriaWallet.provider = provider;
-        return this.done(null, provider);
-      });
-    });
-    // Still in processing
-    return this.setState({ step: state.step });
-  }
-
-  onError = (er) => {
-    return this.setState({ visible: true, error: er, step: 'Error' }, () => {
-      this.FSM.reset();
-    });
-  }
-
-  onClose = (callback) => {
-    this.setState({ visible: true }, () => {
-      this.setState({ visible: false }, () => {
-        this.setState({ ...DEFAULT_STATE }, () => {
-          this.FSM.reset();
-        });
-        if (callback) callback();
-      });
-    });
   }
 
   render() {
     return (
-      <div>
-        {this.state.step === 'SelectWallet' ? <SellectType data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
-        {this.state.step === 'InputAsset' ? <InputAsset data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
-        {this.state.step === 'EstablishConnection' ? <EstablishConnection data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
-        {this.state.step === 'ConnectDevice' ? <ConnectDevice data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
-        {this.state.step === 'ConfirmAddress' ? <ConfirmAddress data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
-        {this.state.step === 'Error' ? <ErrorForm error={this.state.error} done={() => this.onClose(() => { this.done(this.state.error, null) })} /> : null}
+      <Fragment>
+        <Modal visible={this.state.visible} className={cx("fade", "wallet-modal", "choose-blockchain")} dialogClassName={cx("modal-dialog-centered")}>
+          <div className={cx("modal-body")}>
+            <button type="button" className={cx("close-button")} onClick={this.onClose} />
+
+            <span className={cx("title", "d-block", "text-center", "mt-4")} style={{ color: "rgb(19, 205, 172)", fontSize: "24px" }}>Choose Blockchain</span>
+            <p className={cx("d-block", "text-center", "mb-4")} style={{ color: "rgb(40, 47, 56)", fontSize: "16px", lineHeight: "18px" }}>Choose a wallet to fully access features</p>
+            <div className={cx("wallets")}>
+
+              <div className={cx("wallet", "ethereum")}>
+                <div className={cx("icon")}></div>
+                <button className={cx("btn", "btn-gray", "btn-sm")} onClick={() => { this.selectBlockchain('ethereum') }}>Ethereum</button>
+              </div>
+
+              <div className={cx("wallet", "binance")}>
+                <div className={cx("icon")}></div>
+                <button className={cx("btn", "btn-gray", "btn-sm")} onClick={() => { this.selectBlockchain('binance') }}>Binance</button>
+              </div>
+
+            </div>
+
+            <span
+              className={cx("position-absolute", "d-block", "text-left", "mt-5", "mb-1", "github")}
+              style={{ cursor: "pointer" }}
+              onClick={window.kambriaWallet.github}
+            >GitHub Repository</span>
+            <span
+              className={cx("position-absolute", "d-block", "text-left", "mt-5", "mb-1", "term")}
+              style={{ cursor: "pointer" }}
+              onClick={window.kambriaWallet.term}
+            >Terms and Conditions</span>
+            <span
+              className={cx("position-absolute", "d-block", "text-left", "mt-5", "mb-1", "support")}
+              style={{ cursor: "pointer" }}
+              onClick={window.kambriaWallet.support}
+            >Support</span>
+            <p
+              className={cx("d-block", "text-right", "mt-5", "mb-1", "skip-txt")}
+              style={{ cursor: "pointer" }}
+              style={{ color: "rgb(155, 155, 155)", fontSize: "16px", lineHeight: "18px" }}
+            >Or skip to website with limited function</p>
+            <button
+              className={cx("d-block", "mr-0", "btn", "btn-primary-gray", "btn-sm", "skip-btn")}
+              style={{ display: "block", margin: "8px auto 0px" }}
+              onClick={this.onClose}
+            >Skip To Website</button>
+          </div>
+        </Modal>
+
+        {this.state.blockchain === 'ethereum' ? <Ethereum visible={!this.state.background} options={this.options} done={this.done} selectBlockchain={this.selectBlockchain} /> : null}
+        {this.state.blockchain === 'binance' ? <Binance visible={!this.state.background} options={this.options} done={this.done} selectBlockchain={this.selectBlockchain} /> : null}
 
         <InputPassphrase visible={this.state.passphrase} done={(er, re) => this.state.returnPassphrase(er, re)} />
         <GetAuthentication visible={this.state.authetication} qrcode={this.state.qrcode} done={(er, re) => this.state.returnAuthetication(er, re)} />
-      </div>
+      </Fragment>
     );
   }
-
 }
 
-export default KambriaWallet; 
+export default KambriaWallet;
