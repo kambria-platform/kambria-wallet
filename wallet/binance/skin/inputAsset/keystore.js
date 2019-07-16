@@ -6,6 +6,9 @@ import classNames from 'classnames/bind';
 import styles from '../../../static/styles/index.module.css';
 var cx = classNames.bind(styles);
 
+var BnbClient = require('@binance-chain/javascript-sdk');
+var crypto = BnbClient.crypto;
+
 const DEFAULT_STATE = {
   filename: '',
   keystore: null,
@@ -54,12 +57,15 @@ class KeystoreAsset extends Component {
   checkKeystore = (callback) => {
     this.setState({ loading: true }, () => {
       // Fetch the first address to know whether good file
-      let isoxys = new Isoxys(window.kambriaWallet.networkId, 'softwallet', true);
-      isoxys.getAccountByKeystore(this.state.keystore, this.state.password, (er, re) => {
+      try {
+        let priv = crypto.getPrivateKeyFromKeyStore(this.state.keystore, this.state.password);
         this.setState({ loading: false });
-        if (er || re.lenght <= 0) return callback(false);
+        if (!priv) return callback(false);
         return callback(true);
-      });
+      } catch (er) {
+        this.setState({ loading: false });
+        if (er) return callback(false);
+      }
     });
   }
 
@@ -84,7 +90,7 @@ class KeystoreAsset extends Component {
         <div className={cx("form-group")}>
           <label htmlFor="upload-keystore">Upload Keystore</label>
           <div className={cx("form-inline")}>
-            <input id="keystore-file" type="file" accept="application/json" onChange={this.handleChangeFile} style={{ "display": "none" }} />
+            <input id="keystore-file" type="file" accept=".txt" onChange={this.handleChangeFile} style={{ "display": "none" }} />
             <input className={cx("form-control", "col-8", "mr-4")} type="text" id="upload-keystore" value={this.state.filename} disabled />
             <button
               className={cx("btn", "btn-sm", "btn-primary-gray", "text-right", "col-3")}

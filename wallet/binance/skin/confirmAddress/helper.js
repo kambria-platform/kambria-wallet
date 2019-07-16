@@ -1,6 +1,6 @@
-var BnbApiClient = require('@binance-chain/javascript-sdk');
+var BnbClient = require('@binance-chain/javascript-sdk');
 var getBnbRPC = require('../../rpc');
-var crypto = BnbApiClient.crypto;
+var crypto = BnbClient.crypto;
 
 const ERROR = 'Cannot load addresses';
 
@@ -11,35 +11,28 @@ class Helper {
       switch (data.model) {
         // Mnemonic
         case 'mnemonic':
-          let addresses = [];
+          let addressesFromMnemonic = [];
           for (let i = limit * page; i < limit * (page + 1); i++) {
-            let priv = crypto.getPrivateKeyFromMnemonic(
-              data.asset.mnemonic,
-              dpath,
-              i);
-            if (!priv) return reject(ERROR);
-            let addr = crypto.getAddressFromPrivateKey(priv);
-            if (!addr) return reject(ERROR);
-            addresses.push(addr);
+            let privFromMnemonic = crypto.getPrivateKeyFromMnemonic(data.asset.mnemonic, dpath, i);
+            if (!privFromMnemonic) return reject(ERROR);
+            let addrFromMnemonic = crypto.getAddressFromPrivateKey(privFromMnemonic);
+            if (!addrFromMnemonic) return reject(ERROR);
+            addressesFromMnemonic.push(addrFromMnemonic);
           }
-          return resolve(addresses);
+          return resolve(addressesFromMnemonic);
         // Keystore
         case 'keystore':
-          return isoxys.getAccountByKeystore(
-            data.asset.keystore,
-            data.asset.password,
-            (er, re) => {
-              if (er || !re) return reject(ERROR);
-              return resolve([re]);
-            });
+          try {
+            let privFromKeystore = crypto.getPrivateKeyFromKeyStore(data.asset.keystore, data.asset.password);
+            let addrFromKeystore = crypto.getAddressFromPrivateKey(privFromKeystore);
+            return resolve([addrFromKeystore]);
+          } catch (er) {
+            if (er) return reject(ERROR);
+          }
         // Private key
         case 'private-key':
-          return isoxys.getAccountByPrivatekey(
-            data.asset.privateKey,
-            (er, re) => {
-              if (er || !re) return reject(ERROR);
-              return resolve([re]);
-            });
+          let addrFromPrivatekey = crypto.getAddressFromPrivateKey(data.asset.privateKey);
+          return resolve([addrFromPrivatekey]);
         // Error
         default:
           return reject(ERROR);
@@ -69,7 +62,7 @@ class Helper {
   // }
 
   static getBalance(address) {
-    let bnbClient = new BnbApiClient(getBnbRPC(window.kambriaWallet.networkId));
+    let bnbClient = new BnbClient(getBnbRPC(window.kambriaWallet.networkId));
     bnbClient.chooseNetwork(window.kambriaWallet.networkId === 1 ? 'mainnet' : 'testnet');
     return new Promise((resolve, reject) => {
       bnbClient.getBalance(address).then(re => {

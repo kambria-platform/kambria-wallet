@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 
 // Heros to operate and protect Kambria Bridge
 import FiniteStateMachine from './finiteStateMachine';
-import Web3Factory from './web3Factory';
+import BinanceClientFactory from './binanceClientFactory';
 
 // Global/Inherit components
 import ErrorForm from '../core/error';
@@ -42,7 +42,7 @@ class Binance extends Component {
     this.done = props.done;
     this.options = { ...DEFAULT_OPT, ...props.options }
     this.FSM = new FiniteStateMachine();
-    this.W3F = new Web3Factory(this.options.restrictedNetwork, this.options.pageRefreshing);
+    this.BCF = new BinanceClientFactory(this.options.restrictedNetwork, this.options.pageRefreshing);
 
     this.state = {
       ...DEFAULT_STATE,
@@ -58,14 +58,14 @@ class Binance extends Component {
       return this.setState({ step: state.step });
     }
     window.kambriaWallet.logout = () => {
-      this.W3F.clearSession();
+      this.BCF.clearSession();
     }
   }
 
   componentDidMount() {
     // Reconnect to wallet if still maintaining
-    this.W3F.isSessionMaintained(session => {
-      if (session) this.W3F.regenerate(session, (er, provider) => {
+    this.BCF.isSessionMaintained(session => {
+      if (session) this.BCF.regenerate(session, (er, provider) => {
         if (er) return;
         window.kambriaWallet.provider = provider;
         return this.done(null, provider);
@@ -97,7 +97,7 @@ class Binance extends Component {
     if (state.step === 'Error') return this.onError(ERROR);
     // Success case
     if (state.step === 'Success') return this.onClose(() => {
-      this.W3F.generate(state, (er, provider) => {
+      this.BCF.generate(state, (er, provider) => {
         if (er) return this.onError(er);
         window.kambriaWallet.provider = provider;
         return this.done(null, provider);
