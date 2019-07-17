@@ -1,5 +1,7 @@
 var capsuleCoreMemmory = require('capsule-core-js/dist/storage').sessionStorage;
 var capsuleCoreCache = require('capsule-core-js/dist/storage').cache;
+var binanceCoreMemmory = require('binance-core-js/dist/storage').sessionStorage;
+var binanceCoreCache = require('binance-core-js/dist/storage').cache;
 
 const ADDRESS = require('./address');
 const EVENT = require('./event');
@@ -17,9 +19,16 @@ class StateMaintainer {
    * Static functions
    */
 
-  static getState = () => {
-    let data = JSON.parse(MAINTAINER.getItem(ADDRESS.MAINTAINER));
-    return data;
+  static setBeacon = (blockchain) => {
+    window.localStorage.setItem(ADDRESS.BEACON, blockchain);
+  }
+
+  static getBeacon = () => {
+    return window.localStorage.getItem(ADDRESS.BEACON);
+  }
+
+  static clearBeacon = () => {
+    window.localStorage.removeItem(ADDRESS.BEACON);
   }
 
   /**
@@ -62,12 +71,20 @@ class StateMaintainer {
 
   _shareState = () => {
     let data = {};
-    let MAINTAINER = MAINTAINER.getItem(ADDRESS.MAINTAINER);
-    let CAPSULE_JS_MEMORY = capsuleCoreMemmory.get();
-    let CAPSULE_JS_CACHE = capsuleCoreCache.getAll();
-    if (MAINTAINER) data[ADDRESS.MAINTAINER] = MAINTAINER;
-    if (CAPSULE_JS_MEMORY) data[ADDRESS.CAPSULE_JS_MEMORY] = CAPSULE_JS_MEMORY;
-    if (CAPSULE_JS_CACHE) data[ADDRESS.CAPSULE_JS_CACHE] = CAPSULE_JS_CACHE;
+    // Maintainer
+    let maintainerData = MAINTAINER.getItem(ADDRESS.MAINTAINER);
+    if (maintainerData) data[ADDRESS.MAINTAINER] = maintainerData;
+    // Capsule
+    let capsuleMemoryData = capsuleCoreMemmory.get();
+    let capsuleCacheData = capsuleCoreCache.getAll();
+    if (capsuleMemoryData) data[ADDRESS.CAPSULE_JS_MEMORY] = capsuleMemoryData;
+    if (capsuleCacheData) data[ADDRESS.CAPSULE_JS_CACHE] = capsuleCacheData;
+    // Binance
+    let binanceMemoryData = binanceCoreMemmory.get();
+    let binanceCacheData = binanceCoreCache.getAll();
+    if (binanceMemoryData) data[ADDRESS.BINANCE_JS_MEMORY] = binanceMemoryData;
+    if (binanceCacheData) data[ADDRESS.BINANCE_JS_CACHE] = binanceCacheData;
+    // Share
     PORTER.setItem(ADDRESS.PORTER, JSON.stringify(data));
     PORTER.removeItem(ADDRESS.PORTER);
   }
@@ -86,8 +103,14 @@ class StateMaintainer {
         if (key == ADDRESS.CAPSULE_JS_MEMORY) {
           capsuleCoreMemmory.set(data[key]);
         }
-        if (key == ADDRESS.CAPSULE_JS_CACHE) {
+        else if (key == ADDRESS.CAPSULE_JS_CACHE) {
           capsuleCoreCache.setAll(data[key]);
+        }
+        else if (key == ADDRESS.BINANCE_JS_MEMORY) {
+          binanceCoreMemmory.set(data[key]);
+        }
+        else if (key == ADDRESS.BINANCE_JS_CACHE) {
+          binanceCoreCache.setAll(data[key]);
         }
         else {
           MAINTAINER.setItem(key, data[key]);

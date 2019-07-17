@@ -91,8 +91,8 @@ class KambriaWallet extends Component {
 
   componentDidMount() {
     if (this.options.pageRefreshing) {
-      let state = StateMaintainer.getState();
-      if (state && state.blockchain) this.setState({ background: true, blockchain: state.blockchain });
+      let blockchain = StateMaintainer.getBeacon();
+      if (blockchain) this.setState({ background: true, blockchain: blockchain });
     }
   }
 

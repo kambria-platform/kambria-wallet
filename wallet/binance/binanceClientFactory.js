@@ -26,7 +26,10 @@ class BinanceClientFactory {
       if (er) return callback(er, null);
       if (this.pageRefreshing && fmState.step === 'Success') {
         // Not support Hybridwallet and Trezor yet
-        if (fmState.type !== 'hybridwallet') this.SM.setState(fmState);
+        if (fmState.type !== 'hybridwallet') {
+          StateMaintainer.setBeacon('binance');
+          this.SM.setState(fmState);
+        }
       }
       return callback(null, provider);
     }
