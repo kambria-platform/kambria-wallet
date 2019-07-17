@@ -50,11 +50,22 @@ class TestBinance extends Component {
     if (er) return console.error(er);
     if (!provider) return console.error('Use skip the registration');
 
-    console.log(window.kambriaWallet)
+    window.kambriaWallet.provider.watch((er, re) => {
+      if (er) return console.error(er);
+      return this.setState(re);
+    });
   }
 
   sendTx = () => {
-    console.log('Send tx')
+    window.kambriaWallet.provider.client.transfer(
+      this.state.account,
+      this.state.account,
+      1, 'BNB'
+    ).then(re => {
+      return this.setState({ txId: re.result[0].hash.toString(), error: null });
+    }).catch(er => {
+      console.error(er);
+    });
   }
 
   render() {

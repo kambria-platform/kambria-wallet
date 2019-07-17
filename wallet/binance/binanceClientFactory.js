@@ -1,6 +1,4 @@
-var BnbClient = require('@binance-chain/javascript-sdk');
-var crypto = BnbClient.crypto;
-var getBnbRPC = require('./rpc');
+var { BinanceSDK } = require('binance-core-js');
 var StateMaintainer = require('../stateMaintainer');
 
 const ERROR = 'Invalid state of finite state machine';
@@ -24,9 +22,6 @@ class BinanceClientFactory {
   }
 
   generate = (fmState, callback) => {
-    let bnbClient = new BnbClient(getBnbRPC(window.kambriaWallet.networkId));
-    bnbClient.chooseNetwork(window.kambriaWallet.networkId === 1 ? 'mainnet' : 'testnet');
-
     let _callback = (er, provider) => {
       if (er) return callback(er, null);
       if (this.pageRefreshing && fmState.step === 'Success') {
@@ -38,51 +33,36 @@ class BinanceClientFactory {
 
     switch (fmState.wallet) {
 
-      // Ledger
-      // case 'ledger':
-      //   let ledger = new Ledger(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
-      //   switch (fmState.model) {
-      //     case 'ledger-nano-s':
-      //       return ledger.setAccountByLedgerNanoS(fmState.dpath, fmState.index, (er, re) => {
-      //         if (er) return _callback(er, null);
-      //         return _callback(null, ledger);
-      //       });
-      //     default:
-      //       return _callback(ERROR, null);
-      //   }
-
-      // Isoxys
+      // BinanceSDK
       case 'binance-sdk':
+        let binanceSDK = new BinanceSDK(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
         switch (fmState.model) {
           case 'mnemonic':
-            let privFromMnemonic = crypto.getPrivateKeyFromMnemonic(fmState.asset.mnemonic, fmState.dpath, fmState.index);
-            return bnbClient.setPrivateKey(privFromMnemonic).then(() => {
-              return bnbClient.initChain();
-            }).then(() => {
-              return _callback(null, bnbClient);
-            }).catch(er => {
-              // With zero balance, BnbClient return error, that's not really an error
-              return _callback(null, bnbClient);
-            });
+            return binanceSDK.setAccountByMnemonic(
+              fmState.asset.mnemonic,
+              fmState.index,
+              window.kambriaWallet.getPassphrase.open,
+              (er, re) => {
+                if (er) return _callback(er, null);
+                return _callback(null, binanceSDK);
+              });
           case 'keystore':
-            let privFromKeystore = crypto.getPrivateKeyFromKeyStore(fmState.asset.keystore, fmState.asset.password);
-            return bnbClient.setPrivateKey(privFromKeystore).then(() => {
-              return bnbClient.initChain();
-            }).then(() => {
-              return _callback(null, bnbClient);
-            }).catch(er => {
-              // With zero balance, BnbClient return error, that's not really an error
-              return _callback(null, bnbClient);
-            });
+            return binanceSDK.setAccountByKeystore(
+              fmState.asset.keystore,
+              fmState.asset.password,
+              window.kambriaWallet.getPassphrase.open,
+              (er, re) => {
+                if (er) return _callback(er, null);
+                return _callback(null, binanceSDK);
+              });
           case 'private-key':
-            return bnbClient.setPrivateKey(fmState.asset.privateKey).then(() => {
-              return bnbClient.initChain();
-            }).then(() => {
-              return _callback(null, bnbClient);
-            }).catch(er => {
-              // With zero balance, BnbClient return error, that's not really an error
-              return _callback(null, bnbClient);
-            });
+            return binanceSDK.setAccountByPrivatekey(
+              fmState.asset.privateKey,
+              window.kambriaWallet.getPassphrase.open,
+              (er, re) => {
+                if (er) return _callback(er, null);
+                return _callback(null, binanceSDK);
+              });
           default:
             return _callback(ERROR, null);
         }
@@ -94,30 +74,17 @@ class BinanceClientFactory {
   }
 
   regenerate = (fmState, callback) => {
-    if (fmState.blockchain !== 'ethereum') return callback('Unavailable blockchain type', null);
+    if (fmState.blockchain !== 'binance') return callback('Unavailable blockchain type', null);
 
     switch (fmState.wallet) {
 
-      // Ledger
-      // case 'ledger':
-      //   let ledger = new Ledger(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
-      //   switch (fmState.model) {
-      //     case 'ledger-nano-s':
-      //       return ledger.setAccountByLedgerNanoS(fmState.dpath, fmState.index, (er, re) => {
-      //         if (er) return callback(er, null);
-      //         return callback(null, ledger);
-      //       });
-      //     default:
-      //       return callback(ERROR, null);
-      //   }
-
-      // Isoxys
-      case 'isoxys':
-        let isoxys = new Isoxys(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
+      // BinanceSDK
+      case 'binance-sdk':
+        let binanceSDK = new BinanceSDK(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
         let accOpts = { getPassphrase: window.kambriaWallet.getPassphrase.open };
-        return isoxys.setWallet(accOpts, (er, re) => {
+        return binanceSDK.setWallet(accOpts, (er, re) => {
           if (er) return callback(er, null);
-          return callback(null, isoxys);
+          return callback(null, binanceSDK);
         });
 
       // Default
