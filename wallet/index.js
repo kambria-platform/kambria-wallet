@@ -89,13 +89,6 @@ class KambriaWallet extends Component {
     });
   }
 
-  componentDidMount() {
-    if (this.options.pageRefreshing) {
-      let blockchain = StateMaintainer.getBeacon();
-      if (blockchain) this.setState({ background: true, blockchain: blockchain });
-    }
-  }
-
   componentDidUpdate(prevProps) {
     if (this.props.visible !== prevProps.visible) {
       this.setState({ ...DEFAULT_STATE }, () => {
@@ -155,8 +148,8 @@ class KambriaWallet extends Component {
           </div>
         </Modal>
 
-        {this.state.blockchain === 'ethereum' ? <Ethereum visible={!this.state.background} options={this.options} done={this.done} selectBlockchain={this.selectBlockchain} /> : null}
-        {this.state.blockchain === 'binance' ? <Binance visible={!this.state.background} options={this.options} done={this.done} selectBlockchain={this.selectBlockchain} /> : null}
+        <Ethereum visible={this.state.blockchain === 'ethereum'} options={this.options} done={this.done} selectBlockchain={this.selectBlockchain} />
+        <Binance visible={this.state.blockchain === 'binance'} options={this.options} done={this.done} selectBlockchain={this.selectBlockchain} />
 
         <InputPassphrase visible={this.state.passphrase} done={(er, re) => this.state.returnPassphrase(er, re)} />
         <GetAuthentication visible={this.state.authetication} qrcode={this.state.qrcode} done={(er, re) => this.state.returnAuthetication(er, re)} />

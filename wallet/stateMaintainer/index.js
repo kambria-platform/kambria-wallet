@@ -5,9 +5,7 @@ var binanceCoreCache = require('binance-core-js/dist/storage').cache;
 
 const ADDRESS = require('./address');
 const EVENT = require('./event');
-const MAINTAINER = window.sessionStorage;
-const PORTER = window.localStorage;
-
+const STORAGE = window.localStorage;
 
 class StateMaintainer {
   constructor() {
@@ -16,32 +14,18 @@ class StateMaintainer {
   }
 
   /**
-   * Static functions
-   */
-
-  static setBeacon = (blockchain) => {
-    window.localStorage.setItem(ADDRESS.BEACON, blockchain);
-  }
-
-  static getBeacon = () => {
-    return window.localStorage.getItem(ADDRESS.BEACON);
-  }
-
-  static clearBeacon = () => {
-    window.localStorage.removeItem(ADDRESS.BEACON);
-  }
-
-  /**
    * Public functions
    */
 
   getState = (callback) => {
-    let data = JSON.parse(MAINTAINER.getItem(ADDRESS.MAINTAINER));
-    if (data) return callback(data);
-    this._emitEvent(EVENT.GET_DATA);
+    let data = STORAGE.getItem(ADDRESS.MAINTAINER);
+    let maintainerData = JSON.parse(data);
+    // Have no maintainer
+    if (!maintainerData || !maintainerData.blockchain) return callback(null);
+    this._emitEvent(EVENT.SHARE_DATA);
+    // Timeout to wait for sharing data
     setTimeout(() => {
-      data = JSON.parse(MAINTAINER.getItem(ADDRESS.MAINTAINER));
-      return callback(data);
+      return callback(maintainerData);
     }, 1000);
   }
 
@@ -49,7 +33,7 @@ class StateMaintainer {
     let state = JSON.parse(JSON.stringify(value));
     delete state.step;
     delete state.asset;
-    MAINTAINER.setItem(ADDRESS.MAINTAINER, JSON.stringify(state));
+    STORAGE.setItem(ADDRESS.MAINTAINER, JSON.stringify(state));
     this._emitEvent(EVENT.SET_DATA);
   }
 
@@ -63,7 +47,7 @@ class StateMaintainer {
    */
 
   _clearState = () => {
-    MAINTAINER.removeItem(ADDRESS.MAINTAINER);
+    STORAGE.removeItem(ADDRESS.MAINTAINER);
     try { window.kambriaWallet.provider.logout(); }
     catch (er) { console.error('User already logged out'); }
     finally { window.kambriaWallet.provider = null; }
@@ -71,9 +55,6 @@ class StateMaintainer {
 
   _shareState = () => {
     let data = {};
-    // Maintainer
-    let maintainerData = MAINTAINER.getItem(ADDRESS.MAINTAINER);
-    if (maintainerData) data[ADDRESS.MAINTAINER] = maintainerData;
     // Capsule
     let capsuleMemoryData = capsuleCoreMemmory.get();
     let capsuleCacheData = capsuleCoreCache.getAll();
@@ -85,13 +66,13 @@ class StateMaintainer {
     if (binanceMemoryData) data[ADDRESS.BINANCE_JS_MEMORY] = binanceMemoryData;
     if (binanceCacheData) data[ADDRESS.BINANCE_JS_CACHE] = binanceCacheData;
     // Share
-    PORTER.setItem(ADDRESS.PORTER, JSON.stringify(data));
-    PORTER.removeItem(ADDRESS.PORTER);
+    STORAGE.setItem(ADDRESS.PORTER, JSON.stringify(data));
+    STORAGE.removeItem(ADDRESS.PORTER);
   }
 
   _handleEvent = (event) => {
     // Some tags need data, we must share
-    if (event.key == ADDRESS.EVENT && event.newValue == EVENT.GET_DATA)
+    if (event.key == ADDRESS.EVENT && event.newValue == EVENT.SHARE_DATA)
       this._shareState();
     // We clear data
     if (event.key == ADDRESS.EVENT && event.newValue == EVENT.CLEAR_DATA)
@@ -112,16 +93,13 @@ class StateMaintainer {
         else if (key == ADDRESS.BINANCE_JS_CACHE) {
           binanceCoreCache.setAll(data[key]);
         }
-        else {
-          MAINTAINER.setItem(key, data[key]);
-        }
       }
     }
   }
 
   _emitEvent = (event) => {
-    PORTER.setItem(ADDRESS.EVENT, event);
-    PORTER.removeItem(ADDRESS.EVENT);
+    STORAGE.setItem(ADDRESS.EVENT, event);
+    STORAGE.removeItem(ADDRESS.EVENT);
   }
 }
 

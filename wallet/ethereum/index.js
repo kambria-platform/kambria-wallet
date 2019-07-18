@@ -62,7 +62,7 @@ class Ethereum extends Component {
   }
 
   componentDidMount() {
-    // Reconnect to wallet if still maintaining
+    // Regenerate state
     this.W3F.isSessionMaintained(session => {
       if (session) this.W3F.regenerate(session, (er, provider) => {
         if (er) return;

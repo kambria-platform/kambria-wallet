@@ -63,7 +63,7 @@ class Binance extends Component {
   }
 
   componentDidMount() {
-    // Reconnect to wallet if still maintaining
+    // Regenerate state
     this.BCF.isSessionMaintained(session => {
       if (session) this.BCF.regenerate(session, (er, provider) => {
         if (er) return;

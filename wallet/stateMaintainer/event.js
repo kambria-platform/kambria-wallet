@@ -1,6 +1,6 @@
 const EVENT = {
-  GET_DATA: 'GET_DATA',
-  CLEAR_DATA: 'CLEAR_DATA',
+  SHARE_DATA: 'SHARE-DATA',
+  CLEAR_DATA: 'CLEAR-DATA',
 }
 
 module.exports = EVENT;

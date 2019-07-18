@@ -13,7 +13,7 @@ class Web3Factory {
   }
 
   isSessionMaintained = (callback) => {
-    if (!this.pageRefreshing) return callback(null);
+    if (!this.pageRefreshing) return null;
     return this.SM.getState(callback);
   }
 
@@ -26,10 +26,7 @@ class Web3Factory {
       if (er) return callback(er, null);
       if (this.pageRefreshing && fmState.step === 'Success') {
         // Not support Hybridwallet and Trezor yet
-        if (fmState.type !== 'hybridwallet') {
-          StateMaintainer.setBeacon('ethereum');
-          this.SM.setState(fmState);
-        }
+        if (fmState.type !== 'hybridwallet') this.SM.setState(fmState);
       }
       return callback(null, provider);
     }
