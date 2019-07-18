@@ -50,7 +50,7 @@ class TestBinance extends Component {
     if (er) return console.error(er);
     if (!provider) return console.error('Use skip the registration');
 
-    window.kambriaWallet.provider.watch((er, re) => {
+    this.watcher = window.kambriaWallet.provider.watch((er, re) => {
       if (er) return console.error(er);
       return this.setState(re);
     });
@@ -66,6 +66,10 @@ class TestBinance extends Component {
     }).catch(er => {
       console.error(er);
     });
+  }
+
+  componentWillUnmount() {
+    if (this.watcher) this.watcher.stopWatching();
   }
 
   render() {

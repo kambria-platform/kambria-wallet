@@ -19,7 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@binance-chain/javascript-sdk": "^2.14.2",
-    "binance-core-js": "^1.0.3",
+    "binance-core-js": "^1.0.5",
     "capsule-core-js": "^1.0.8",
     "classnames": "^2.2.6",
     "qrcode.react": "^0.9.3",

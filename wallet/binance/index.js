@@ -11,6 +11,7 @@ import ErrorForm from '../core/error';
 import SelectWallet from './skin/selectWallet';
 import InputAsset from './skin/inputAsset';
 import ConfirmAddress from './skin/confirmAddress';
+import ConnectDevice from './skin/connectDevice';
 
 // Constants
 const ERROR = 'Wallet was broken';
@@ -91,6 +92,7 @@ class Binance extends Component {
     // Heros are working :)
     // Move to next step
     let state = this.FSM.next(re);
+    console.log(state)
 
     // Run to next step
     // Error case
@@ -130,6 +132,7 @@ class Binance extends Component {
         {this.state.step === 'SelectWallet' ? <SelectWallet data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
         {this.state.step === 'InputAsset' ? <InputAsset data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
         {this.state.step === 'ConfirmAddress' ? <ConfirmAddress data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
+        {this.state.step === 'ConnectDevice' ? <ConnectDevice data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
         {this.state.step === 'Error' ? <ErrorForm error={this.state.error} done={() => this.onClose(() => { this.done(this.state.error, null) })} /> : null}
       </Fragment>
     );

@@ -1,4 +1,4 @@
-var { BinanceSDK } = require('binance-core-js');
+var { Ledger, BinanceSDK } = require('binance-core-js');
 var StateMaintainer = require('../stateMaintainer');
 
 const ERROR = 'Invalid state of finite state machine';
@@ -32,6 +32,19 @@ class BinanceClientFactory {
     }
 
     switch (fmState.wallet) {
+
+      // Ledger
+      case 'ledger':
+        let ledger = new Ledger(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
+        switch (fmState.model) {
+          case 'ledger-nano-s':
+            return ledger.setAccountByLedgerNanoS(fmState.dpath, fmState.index, (er, re) => {
+              if (er) return _callback(er, null);
+              return _callback(null, ledger);
+            });
+          default:
+            return _callback(ERROR, null);
+        }
 
       // BinanceSDK
       case 'binance-sdk':
@@ -77,6 +90,19 @@ class BinanceClientFactory {
     if (fmState.blockchain !== 'binance') return callback('Unavailable blockchain type', null);
 
     switch (fmState.wallet) {
+      
+      // Ledger
+      case 'ledger':
+        let ledger = new Ledger(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
+        switch (fmState.model) {
+          case 'ledger-nano-s':
+            return ledger.setAccountByLedgerNanoS(fmState.dpath, fmState.index, (er, re) => {
+              if (er) return callback(er, null);
+              return callback(null, ledger);
+            });
+          default:
+            return callback(ERROR, null);
+        }
 
       // BinanceSDK
       case 'binance-sdk':

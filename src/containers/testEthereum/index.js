@@ -64,7 +64,7 @@ class TestEthereum extends Component {
     if (er) return console.error(er);
     if (!provider) return console.error('Use skip the registration');
 
-    window.kambriaWallet.provider.watch((er, re) => {
+    this.watcher = window.kambriaWallet.provider.watch((er, re) => {
       if (er) return console.error(er);
       return this.setState(re);
     });
@@ -73,12 +73,16 @@ class TestEthereum extends Component {
   sendTx = () => {
     window.kambriaWallet.provider.web3.eth.sendTransaction({
       from: this.state.account,
-      to: '0x5a926b235e992d6ba52d98415e66afe5078a1690',
+      to: this.state.account,
       value: '1000000000000000',
     }, (er, txId) => {
       if (er) return console.error(er);
       return this.setState({ txId: txId.toString(), error: null });
     });
+  }
+
+  componentWillUnmount() {
+    if (this.watcher) this.watcher.stopWatching();
   }
 
   render() {

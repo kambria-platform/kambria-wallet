@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import StateMaintainer from './stateMaintainer';
 
 import Modal from './core/modal';
 import Ethereum from './ethereum';
