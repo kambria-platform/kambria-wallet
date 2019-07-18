@@ -92,7 +92,6 @@ class Binance extends Component {
     // Heros are working :)
     // Move to next step
     let state = this.FSM.next(re);
-    console.log(state)
 
     // Run to next step
     // Error case
