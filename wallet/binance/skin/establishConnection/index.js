@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import Modal from '../../../core/modal';
-import MewAsset from './mew';
 import TrustAsset from './trust';
 
 // Setup CSS Module
@@ -10,7 +9,6 @@ import styles from '../../../static/styles/index.module.css';
 var cx = classNames.bind(styles);
 
 const MENU = [
-  { key: 'mew', label: 'MEW' },
   { key: 'trust', label: 'Trust Wallet' },
 ];
 
@@ -20,7 +18,7 @@ class EstablishConnection extends Component {
     super(props);
 
     this.state = {
-      model: 'mew'
+      model: 'trust'
     }
 
     this.done = props.done;
@@ -53,7 +51,6 @@ class EstablishConnection extends Component {
   }
 
   device = () => {
-    if (this.state.model === 'mew') return <MewAsset done={this.onConnect} />
     if (this.state.model === 'trust') return <TrustAsset done={this.onConnect} />
   }
 

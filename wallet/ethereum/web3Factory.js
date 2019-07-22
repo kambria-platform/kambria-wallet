@@ -71,8 +71,8 @@ class Web3Factory {
       case 'mew':
         return _callback(null, fmState.provider);
 
-      // Marrella
-      case 'marrella':
+      // Trust Wallet
+      case 'trust':
         return _callback(null, fmState.provider);
 
       // Isoxys

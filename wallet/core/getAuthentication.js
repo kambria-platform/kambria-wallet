@@ -44,7 +44,7 @@ class getAuthentication extends Component {
           <button type="button" className={cx("close-button")} onClick={() => { this.onClose() }}></button>
 
           <span className={cx("title", "d-block", "text-center", "mt-4")} style={{ color: "black", fontSize: "24px" }}>Authentication</span>
-          <p className={cx("d-block", "text-center", "mb-4")} style={{ color: "#97a4ad", fontSize: "16px", lineHeight: "18px" }}>Please using MyEtherWallet application on your phone to scan and establish the connection!</p>
+          <p className={cx("d-block", "text-center", "mb-4")} style={{ color: "#97a4ad", fontSize: "16px", lineHeight: "18px" }}>Please using your device to scan and establish the connection!</p>
           <div className={cx("qr-code", "mx-auto", "my-5")}>
             {this.state.qrcode ? <QRCode size={200} value={this.state.qrcode} /> : null}
           </div>

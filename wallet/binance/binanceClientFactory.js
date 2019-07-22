@@ -46,6 +46,10 @@ class BinanceClientFactory {
             return _callback(ERROR, null);
         }
 
+      // Trust Wallet
+      case 'trust':
+        return _callback(null, fmState.provider);
+
       // BinanceSDK
       case 'binance-sdk':
         let binanceSDK = new BinanceSDK(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
@@ -90,7 +94,7 @@ class BinanceClientFactory {
     if (fmState.blockchain !== 'binance') return callback('Unavailable blockchain type', null);
 
     switch (fmState.wallet) {
-      
+
       // Ledger
       case 'ledger':
         let ledger = new Ledger(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);

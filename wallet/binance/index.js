@@ -10,6 +10,7 @@ import ErrorForm from '../core/error';
 // Workflow components
 import SelectWallet from './skin/selectWallet';
 import InputAsset from './skin/inputAsset';
+import EstablishConnection from './skin/establishConnection';
 import ConfirmAddress from './skin/confirmAddress';
 import ConnectDevice from './skin/connectDevice';
 
@@ -91,7 +92,9 @@ class Binance extends Component {
 
     // Heros are working :)
     // Move to next step
+    console.log(re)
     let state = this.FSM.next(re);
+    console.log(state)
 
     // Run to next step
     // Error case
@@ -130,8 +133,9 @@ class Binance extends Component {
       <Fragment>
         {this.state.step === 'SelectWallet' ? <SelectWallet data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
         {this.state.step === 'InputAsset' ? <InputAsset data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
-        {this.state.step === 'ConfirmAddress' ? <ConfirmAddress data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
+        {this.state.step === 'EstablishConnection' ? <EstablishConnection data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
         {this.state.step === 'ConnectDevice' ? <ConnectDevice data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
+        {this.state.step === 'ConfirmAddress' ? <ConfirmAddress data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
         {this.state.step === 'Error' ? <ErrorForm error={this.state.error} done={() => this.onClose(() => { this.done(this.state.error, null) })} /> : null}
       </Fragment>
     );
