@@ -2,11 +2,11 @@ var capsuleCoreMemmory = require('capsule-core-js/dist/storage').sessionStorage;
 var capsuleCoreCache = require('capsule-core-js/dist/storage').cache;
 var binanceCoreMemmory = require('binance-core-js/dist/storage').sessionStorage;
 var binanceCoreCache = require('binance-core-js/dist/storage').cache;
+var beacon = require('./beacon');
 
 const ADDRESS = require('./address');
 const EVENT = require('./event');
 const STORAGE = window.localStorage;
-const MEMORY = window.sessionStorage;
 
 class StateMaintainer {
   constructor() {
@@ -18,7 +18,6 @@ class StateMaintainer {
    * Public functions
    */
   isStateMaintained(callback) {
-    if (!MEMORY.getItem(ADDRESS.BEACON)) return null;
     return this.getState(callback);
   }
 
@@ -30,6 +29,7 @@ class StateMaintainer {
     this._emitEvent(EVENT.SHARE_DATA);
     // Timeout to wait for sharing data
     setTimeout(() => {
+      if (!beacon.get()) return callback(null);
       return callback(maintainerData);
     }, 1000);
   }
@@ -40,7 +40,7 @@ class StateMaintainer {
     delete state.asset;
     delete state.provider;
     STORAGE.setItem(ADDRESS.MAINTAINER, JSON.stringify(state));
-    MEMORY.setItem(ADDRESS.BEACON, 'The session is being maintained');
+    beacon.set();
     this._emitEvent(EVENT.SET_DATA);
   }
 
@@ -54,6 +54,7 @@ class StateMaintainer {
    */
 
   _clearState = () => {
+    beacon.remove();
     STORAGE.removeItem(ADDRESS.MAINTAINER);
     try { window.kambriaWallet.provider.logout(); }
     catch (er) { console.error('User already logged out'); }
@@ -72,6 +73,9 @@ class StateMaintainer {
     let binanceCacheData = binanceCoreCache.getAll();
     if (binanceMemoryData) data[ADDRESS.BINANCE_JS_MEMORY] = binanceMemoryData;
     if (binanceCacheData) data[ADDRESS.BINANCE_JS_CACHE] = binanceCacheData;
+    // Beacon
+    let beaconData = beacon.get();
+    if (beaconData) data[ADDRESS.BEACON] = beaconData;
     // Share
     STORAGE.setItem(ADDRESS.PORTER, JSON.stringify(data));
     STORAGE.removeItem(ADDRESS.PORTER);
@@ -99,6 +103,9 @@ class StateMaintainer {
         }
         else if (key == ADDRESS.BINANCE_JS_CACHE) {
           binanceCoreCache.setAll(data[key]);
+        }
+        else if (key == ADDRESS.BEACON) {
+          beacon.set();
         }
       }
     }

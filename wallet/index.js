@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 
+import StateMaintainer from './stateMaintainer';
 import Modal from './core/modal';
 import Ethereum from './ethereum';
 import Binance from './binance';
@@ -36,6 +37,7 @@ class KambriaWallet extends Component {
 
     this.options = { ...DEFAULT_OPT, ...props.options }
     this.done = props.done;
+    this.SM = new StateMaintainer();
 
     this.state = {
       ...DEFAULT_STATE,
@@ -75,6 +77,12 @@ class KambriaWallet extends Component {
       close: () => {
         this.setState({ authetication: false, qrcode: null, returnAuthetication: null });
       },
+    }
+    window.kambriaWallet.home = () => {
+      this.selectBlockchain();
+    }
+    window.kambriaWallet.logout = () => {
+      this.SM.clearState();
     }
   }
 
@@ -164,8 +172,8 @@ class KambriaWallet extends Component {
           </div>
         </Modal>
 
-        <Ethereum visible={this.state.blockchain === 'ethereum'} options={this.options} done={this.onEthereum} selectBlockchain={this.selectBlockchain} />
-        <Binance visible={this.state.blockchain === 'binance'} options={this.options} done={this.onBinance} selectBlockchain={this.selectBlockchain} />
+        <Ethereum visible={this.state.blockchain === 'ethereum'} options={this.options} done={this.onEthereum} />
+        <Binance visible={this.state.blockchain === 'binance'} options={this.options} done={this.onBinance} />
 
         <InputPassphrase visible={this.state.passphrase} done={(er, re) => this.state.returnPassphrase(er, re)} />
         <GetAuthentication visible={this.state.authetication} qrcode={this.state.qrcode} done={(er, re) => this.state.returnAuthetication(er, re)} />

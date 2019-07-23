@@ -50,18 +50,6 @@ class Ethereum extends Component {
       ...DEFAULT_STATE,
       step: props.visible ? this.FSM.next().step : 'Idle'
     };
-
-    /**
-     * Group of global functions
-     */
-    window.kambriaWallet.back = () => {
-      let state = this.FSM.back();
-      if (state.step === 'Idle') return this.props.selectBlockchain();
-      return this.setState({ step: state.step });
-    }
-    window.kambriaWallet.logout = () => {
-      this.SM.clearState();
-    }
   }
 
   componentDidMount() {
@@ -78,8 +66,18 @@ class Ethereum extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.visible !== prevProps.visible) {
-      if (this.props.visible) return this.setState({ visible: true, step: this.FSM.next().step });
-      return this.setState({ ...DEFAULT_STATE });
+      if (this.props.visible) {
+        window.kambriaWallet.back = () => {
+          let state = this.FSM.back();
+          if (state.step === 'Idle') return window.kambriaWallet.home();
+          return this.setState({ step: state.step });
+        }
+        this.setState({ visible: true, step: this.FSM.next().step });
+      }
+      else {
+        window.kambriaWallet.back = null;
+        this.setState({ ...DEFAULT_STATE });
+      }
     }
   }
 
