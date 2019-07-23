@@ -2,16 +2,20 @@ var capsuleCoreMemmory = require('capsule-core-js/dist/storage').sessionStorage;
 var capsuleCoreCache = require('capsule-core-js/dist/storage').cache;
 var binanceCoreMemmory = require('binance-core-js/dist/storage').sessionStorage;
 var binanceCoreCache = require('binance-core-js/dist/storage').cache;
+
+var Porter = require('./porter');
 var beacon = require('./beacon');
 
 const ADDRESS = require('./address');
-const EVENT = require('./event');
 const STORAGE = window.localStorage;
 
 class StateMaintainer {
   constructor() {
     // Setup listener
-    window.addEventListener('storage', this._handleEvent, false);
+    this.porter = new Porter();
+    this.porter.onNewData(this._newState);
+    this.porter.onShareData(this._shareState);
+    this.porter.onClearData(this._clearState)
   }
 
   /**
@@ -26,7 +30,8 @@ class StateMaintainer {
     let maintainerData = JSON.parse(data);
     // Have no maintainer
     if (!maintainerData || !maintainerData.blockchain) return callback(null);
-    this._emitEvent(EVENT.SHARE_DATA);
+    // Emit SHARE-DATA event
+    this.porter.emitShareData();
     // Timeout to wait for sharing data
     setTimeout(() => {
       if (!beacon.get()) return callback(null);
@@ -41,24 +46,35 @@ class StateMaintainer {
     delete state.provider;
     STORAGE.setItem(ADDRESS.MAINTAINER, JSON.stringify(state));
     beacon.set();
-    this._emitEvent(EVENT.SET_DATA);
   }
 
   clearState = () => {
     this._clearState();
-    this._emitEvent(EVENT.CLEAR_DATA);
+    this.porter.emitClearData();
   }
 
   /**
    * Internal functions
    */
 
-  _clearState = () => {
-    beacon.remove();
-    STORAGE.removeItem(ADDRESS.MAINTAINER);
-    try { window.kambriaWallet.provider.logout(); }
-    catch (er) { console.error('User already logged out'); }
-    finally { window.kambriaWallet.provider = null; }
+  _newState = (data) => {
+    for (let key in data) {
+      if (key == ADDRESS.CAPSULE_JS_MEMORY) {
+        capsuleCoreMemmory.set(data[key]);
+      }
+      else if (key == ADDRESS.CAPSULE_JS_CACHE) {
+        capsuleCoreCache.setAll(data[key]);
+      }
+      else if (key == ADDRESS.BINANCE_JS_MEMORY) {
+        binanceCoreMemmory.set(data[key]);
+      }
+      else if (key == ADDRESS.BINANCE_JS_CACHE) {
+        binanceCoreCache.setAll(data[key]);
+      }
+      else if (key == ADDRESS.BEACON) {
+        beacon.set();
+      }
+    }
   }
 
   _shareState = () => {
@@ -77,43 +93,15 @@ class StateMaintainer {
     let beaconData = beacon.get();
     if (beaconData) data[ADDRESS.BEACON] = beaconData;
     // Share
-    STORAGE.setItem(ADDRESS.PORTER, JSON.stringify(data));
-    STORAGE.removeItem(ADDRESS.PORTER);
+    this.porter.emitNewData(data);
   }
 
-  _handleEvent = (event) => {
-    // Some tags need data, we must share
-    if (event.key == ADDRESS.EVENT && event.newValue == EVENT.SHARE_DATA)
-      this._shareState();
-    // We clear data
-    if (event.key == ADDRESS.EVENT && event.newValue == EVENT.CLEAR_DATA)
-      this._clearState();
-    // I will send you data
-    if (event.key == ADDRESS.PORTER) {
-      let data = JSON.parse(event.newValue);
-      for (let key in data) {
-        if (key == ADDRESS.CAPSULE_JS_MEMORY) {
-          capsuleCoreMemmory.set(data[key]);
-        }
-        else if (key == ADDRESS.CAPSULE_JS_CACHE) {
-          capsuleCoreCache.setAll(data[key]);
-        }
-        else if (key == ADDRESS.BINANCE_JS_MEMORY) {
-          binanceCoreMemmory.set(data[key]);
-        }
-        else if (key == ADDRESS.BINANCE_JS_CACHE) {
-          binanceCoreCache.setAll(data[key]);
-        }
-        else if (key == ADDRESS.BEACON) {
-          beacon.set();
-        }
-      }
-    }
-  }
-
-  _emitEvent = (event) => {
-    STORAGE.setItem(ADDRESS.EVENT, event);
-    STORAGE.removeItem(ADDRESS.EVENT);
+  _clearState = () => {
+    beacon.remove();
+    STORAGE.removeItem(ADDRESS.MAINTAINER);
+    try { window.kambriaWallet.provider.logout(); }
+    catch (er) { console.error('User already logged out'); }
+    finally { window.kambriaWallet.provider = null; }
   }
 }
 
