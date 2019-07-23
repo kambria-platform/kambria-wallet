@@ -68,8 +68,6 @@ class BinanceClientFactory {
   }
 
   regenerate = (fmState, callback) => {
-    if (fmState.blockchain !== 'binance') return callback('Unavailable blockchain type', null);
-
     switch (fmState.wallet) {
 
       // Ledger

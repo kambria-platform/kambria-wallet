@@ -63,11 +63,12 @@ class Binance extends Component {
     if (!this.options.pageRefreshing) return;
     // Regenerate state
     this.SM.isStateMaintained(state => {
-      if (state) this.BCF.regenerate(state, (er, provider) => {
-        if (er) return;
-        window.kambriaWallet.provider = provider;
-        return this.done(null, provider);
-      });
+      if (state && state.blockchain === 'binance')
+        this.BCF.regenerate(state, (er, provider) => {
+          if (er) return window.kambriaWallet.logout();
+          window.kambriaWallet.provider = provider;
+          return this.done(null, provider);
+        });
     });
   }
 

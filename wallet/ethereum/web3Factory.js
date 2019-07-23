@@ -95,8 +95,6 @@ class Web3Factory {
   }
 
   regenerate = (fmState, callback) => {
-    if (fmState.blockchain !== 'ethereum') return callback('Unavailable blockchain type', null);
-
     switch (fmState.wallet) {
 
       // Metamask

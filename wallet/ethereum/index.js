@@ -56,11 +56,12 @@ class Ethereum extends Component {
     if (!this.options.pageRefreshing) return;
     // Regenerate state
     this.SM.isStateMaintained(state => {
-      if (state) this.W3F.regenerate(state, (er, provider) => {
-        if (er) return window.kambriaWallet.logout();
-        window.kambriaWallet.provider = provider;
-        return this.done(null, provider);
-      });
+      if (state && state.blockchain === 'ethereum')
+        this.W3F.regenerate(state, (er, provider) => {
+          if (er) return window.kambriaWallet.logout();
+          window.kambriaWallet.provider = provider;
+          return this.done(null, provider);
+        });
     });
   }
 

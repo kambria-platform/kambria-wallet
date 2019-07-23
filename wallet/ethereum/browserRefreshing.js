@@ -10,7 +10,7 @@ const config = {
   'ledger-nano-s': true,
   'trezor-one': true,
   // Hybridwallet
-  'my-ether-wallet': true,
+  'my-ether-wallet': false,
   'trust-wallet': true,
   // Softwallet
   'mnemonic': true,
