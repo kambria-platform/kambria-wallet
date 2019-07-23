@@ -1,6 +1,8 @@
 import React, { Component, Fragment } from 'react';
 
 // Heros to operate and protect Kambria Bridge
+import StateMaintainer from '../stateMaintainer';
+import BrowserRereshing from './browserRefreshing';
 import FiniteStateMachine from './finiteStateMachine';
 import BinanceClientFactory from './binanceClientFactory';
 
@@ -43,8 +45,9 @@ class Binance extends Component {
 
     this.done = props.done;
     this.options = { ...DEFAULT_OPT, ...props.options }
+    this.SM = new StateMaintainer();
     this.FSM = new FiniteStateMachine();
-    this.BCF = new BinanceClientFactory(this.options.restrictedNetwork, this.options.pageRefreshing);
+    this.BCF = new BinanceClientFactory(this.options.restrictedNetwork);
 
     this.state = {
       ...DEFAULT_STATE,
@@ -60,14 +63,15 @@ class Binance extends Component {
       return this.setState({ step: state.step });
     }
     window.kambriaWallet.logout = () => {
-      this.BCF.clearSession();
+      this.SM.clearState();
     }
   }
 
   componentDidMount() {
+    if (!this.options.pageRefreshing) return;
     // Regenerate state
-    this.BCF.isSessionMaintained(session => {
-      if (session) this.BCF.regenerate(session, (er, provider) => {
+    this.SM.isStateMaintained(state => {
+      if (state) this.BCF.regenerate(state, (er, provider) => {
         if (er) return;
         window.kambriaWallet.provider = provider;
         return this.done(null, provider);
@@ -92,15 +96,15 @@ class Binance extends Component {
 
     // Heros are working :)
     // Move to next step
-    console.log(re)
     let state = this.FSM.next(re);
-    console.log(state)
 
     // Run to next step
     // Error case
     if (state.step === 'Error') return this.onError(ERROR);
     // Success case
     if (state.step === 'Success') return this.onClose(() => {
+      // Store state
+      if (this.options.pageRefreshing && BrowserRereshing.isSupported(state.model)) this.SM.setState(state);
       this.BCF.generate(state, (er, provider) => {
         if (er) return this.onError(er);
         window.kambriaWallet.provider = provider;

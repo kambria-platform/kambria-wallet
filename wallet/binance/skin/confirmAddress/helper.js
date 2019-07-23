@@ -6,7 +6,7 @@ const ERROR = 'Cannot load addresses';
 class Helper {
 
   static getAddressByBinanceSDK(data, dpath, limit, page) {
-    let binanceSDK = new BinanceSDK(window.kambriaWallet.networkId, data.type, true);
+    let binanceSDK = new BinanceSDK(window.kambriaWallet.networkId.binance, data.type, true);
     return new Promise((resolve, reject) => {
       switch (data.model) {
         // Mnemonic
@@ -44,7 +44,7 @@ class Helper {
   }
 
   static getAddressByLedger(data, dpath, limit, page) {
-    let ledger = new Ledger(window.kambriaWallet.networkId, data.type, true);
+    let ledger = new Ledger(window.kambriaWallet.networkId.binance, data.type, true);
     return new Promise((resolve, reject) => {
       switch (data.model) {
         // Ledger Nano S
@@ -65,8 +65,8 @@ class Helper {
   }
 
   static getBalance(address) {
-    let bnbClient = new BnbClient(rpc.getRPC(window.kambriaWallet.networkId));
-    bnbClient.chooseNetwork(rpc.getNetwork(window.kambriaWallet.networkId));
+    let bnbClient = new BnbClient(rpc.getRPC(window.kambriaWallet.networkId.binance));
+    bnbClient.chooseNetwork(rpc.getNetwork(window.kambriaWallet.networkId.binance));
     return new Promise((resolve, reject) => {
       bnbClient.getBalance(address).then(re => {
         if (!re || re.length == 0) return reject('Cannot get balance');

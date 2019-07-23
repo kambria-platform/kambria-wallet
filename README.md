@@ -3,7 +3,9 @@
 This module is a build-in zero client node as Metamask. It's supporting most of basic functions 
 such as account management, transacion, contract, ...  With some restrictions of browser, the module will serve fully functions in Chrome and partly in the other browsers.
 
-In **VERSION 2.x.x** module start to support React beside build-in zero clients.
+* In **VERSION 2.x.x** module start to support React beside build-in zero clients.
+* In **VERSION 3.x.x** module start to support mobile devides.
+* In **VERSION 4.x.x** module start to support Binance chain.
 
 ## Install
 
@@ -11,25 +13,19 @@ In **VERSION 2.x.x** module start to support React beside build-in zero clients.
 npm install --save @kambria/kambria-wallet
 ```
 
-# For using
+# For browsers
 
 ## Prequisitions (In case, you want to install web3 by yourself)
 
 * Install web3: ***Must be 0.20.x verison.***
 
 ```
-npm install web3@0.20.6
+npm install web3@0.20.7
 ```
 
 ## Utility
 
-Component <Wallet /> has 3 props:
-
-* visible: `true/false` to toogle the register modal.
-* net: chaincode [(Chaincode detail)](https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids).
-* done: callback function returns the provider when register had done.
-
-Basic use:
+### Basic use:
 
 ```
 import Wallet from '@kambria/kambria-wallet';
@@ -37,19 +33,30 @@ import Wallet from '@kambria/kambria-wallet';
 // ... Something React here
 
 render() {
-  <Wallet visible={visible} net={chaincode} done={callback} />
+  <Wallet visible={visible} options={options} done={callback} />
 }
 ```
 
-Advance use:
+### The component has 3 props:
 
-```
-import { Metamask, Isoxys } from '@kambria/kambria-wallet';
 
-// Recommend to view Example 2
-```
+1. `visible`: `<boolean>` - toogle the register modal.
 
-## Examples 1
+2. `options`: `<object>` - wallet configurations. [Click here](#cheatsheet) to see the `networkId` detail.
+   ```
+   {
+     restrictedNetwork: <boolean> (true at default) - prevent changing network
+     pageRefreshing: <boolean> (true at default) - support browser to maintain the session when refreshing
+     networkId: {
+       ethereum: <number> - Ethereum network ID
+       binance: <number> - Binance network ID
+     }
+   }
+   ```
+
+3. `done`: `<function>` - callback function returns `provider` instance when register has been done.
+
+## Examples
 
 ```
 import React, { Component } from 'react';
@@ -59,6 +66,7 @@ import Wallet from '@kambria/kambria-wallet';
 class TestWallet extends Component {
   constructor() {
     super();
+
     this.state = {
       visible: false,
       provider: null,
@@ -68,45 +76,48 @@ class TestWallet extends Component {
       ERROR: null
     }
 
-    this.register = this.register.bind(this);
-    this.done = this.done.bind(this);
-    this.sendTx = this.sendTx.bind(this);
-  }
-
-  register(force) {
-    if (force) {
-      this.setState({ visible: false }, function () {
-        this.setState({ visible: true });
-      });
+    this.options = {
+      restrictedNetwork: true,
+      pageRefreshing: true,
+      networkId: {
+        ethereum: 4,
+        binance: 2
+      }
     }
-    else this.setState({ visible: true });
   }
 
-  done(er, provider) {
-    if (er) return console.error(er)
+  register = () => {
+    this.setState({ visible: false }, () => {
+      this.setState({ visible: true });
+    });
+  }
 
-    var self = this;
-    provider.web3.eth.getCoinbase(function (er, account) {
+  done = (er, re) => {
+    if (er) return console.error(er)
+    if (!re) return console.error('Use skip the registration');
+    let {blockchain, provider} = re;
+
+    console.log('Blockchain name:', blockchain);
+    provider.web3.eth.getCoinbase((er, account) => {
       if (er) return console.error(er);
-      provider.web3.eth.getBalance(account, function (er, balance) {
+      provider.web3.eth.getBalance(account, (er, balance) => {
         if (er) return console.error(er);
-        self.setState({ ACCOUNT: account, BALANCE: Number(balance) });
+        this.setState({ ACCOUNT: account, BALANCE: Number(balance) });
       })
     });
 
     return this.setState({ provider: provider });
   }
 
-  sendTx() {
-    var self = this;
-    var provider = this.state.provider;
+  sendTx = () => {
+    let provider = this.state.provider;
     provider.web3.eth.sendTransaction({
       from: this.state.ACCOUNT,
       to: '0x5a926b235e992d6ba52d98415e66afe5078a1690',
       value: '1000000000000000'
-    }, function (er, txId) {
-      if (er) return self.setState({ ERROR: JSON.stringify(er) });
-      return self.setState({ TXID: txId.toString() });
+    }, (er, txId) => {
+      if (er) return this.setState({ ERROR: JSON.stringify(er) });
+      return this.setState({ TXID: txId.toString() });
     });
   }
 
@@ -114,7 +125,7 @@ class TestWallet extends Component {
     return (
       <div>
         <h1>Wallet testing</h1>
-        <button onClick={() => this.register(true)}>Register</button>
+        <button onClick={this.register}>Register</button>
 
         <div>
           <p>Account: {this.state.ACCOUNT}</p>
@@ -123,7 +134,7 @@ class TestWallet extends Component {
           <button onClick={this.sendTx}>Send Tx</button>
           {this.state.ERROR ? <a >{this.state.ERROR}</a> : null}
         </div>
-        <Wallet visible={this.state.visible} net={4} done={this.done} />
+        <Wallet visible={this.state.visible} options={this.options} done={this.done} />
       </div>
     );
   }
@@ -132,100 +143,11 @@ class TestWallet extends Component {
 export default TestWallet;
 ```
 
-## Examples 2
-
-```
-import React, { Component } from 'react';
-import {Metamask, Isoxys} from '@kambria/kambria-wallet';
-
-const NETWORK = 'rinkeby';
-const TYPE = 'softwallet';
-
-const accOpts = {
-  mnemonic: 'expand lake',
-  password: null,
-  path: "m/44'/60'/0'/0",
-  i: 0,
-  passphrase: 'p@ssphr@se'
-}
-
-class TestIsoxys extends Component {
-  constructor() {
-    super();
-
-    var self = this;
-    this.state = {
-      ERROR: null,
-      ADDRESS: null,
-      BALANCE: 0,
-      TXID: 0
-    }
-
-    this.isoxys = new Isoxys(NETWORK, TYPE, true);
-
-    this.isoxys.setAccountByMnemonic(accOpts.mnemonic, accOpts.password, null, 0, accOpts.passphrase);
-
-    this.isoxys.web3.eth.getCoinbase(function (er, re) {
-      if (er) return self.setState({ ERROR: er.toString() });
-      self.setState({ ADDRESS: re })
-
-      self.getBalance(re);
-    });
-  }
-
-  confirmUser(callback) {
-    var passphrase = window.prompt('Please enter passphrase:');
-    if (!passphrase) return console.error('User denied signing transaction');
-    this.isoxys.provider.unlockAccount(passphrase);
-    return callback();
-  }
-
-  getBalance(address) {
-    var self = this;
-    this.isoxys.web3.eth.getBalance(address, function (er, re) {
-      if (er) return self.setState({ ERROR: er.toString() });
-      return self.setState({ BALANCE: re.toString() });
-    });
-  }
-
-  sendTx() {
-    var self = this;
-    this.confirmUser(function () {
-      self.isoxys.web3.eth.sendTransaction(
-        {
-          from: self.state.ADDRESS,
-          to: '0x0',
-          value: 1000000000000000
-        }, function (er, txId) {
-        if (er) return self.setState({ ERROR: JSON.stringify(er) });
-        return self.setState({ TXID: txId.toString() });
-      });
-    });
-  }
-
-  render() {
-    return (
-      <div>
-        <h1>Isoxys testing</h1>
-        <p>View console log for details</p>
-        <p>Account: {this.state.ADDRESS}</p>
-        <p>Balance: {this.state.BALANCE} wei</p>
-        <p>Tx id: {this.state.TXID}</p>
-        <button onClick={() => this.sendTx()}>Transfer</button>
-        {this.state.ERROR ? <p>{this.state.ERROR}</p> : null}
-      </div>
-    );
-  }
-}
-
-export default TestIsoxys;
-```
-
-# For Dev
+# For contributors
 
 ## The structure
 
-The `wallet` folder contains the main source code. It has 2 sub-folders namely `lib` and `skin`, `lib` contains source code of the zero clients, `skin` contains source code of React.
+The `wallet` folder contains the main source code. It has 2 sub-folders - `ethereum` and `binance` - which are Ethereum source and Binance source respectively. Furthermore, `core` contains source code of re-used components, `static` contains static resouces and `stateMaintainer` is a hero helping to share state between multi browser windows.
 
 The `src` folder contains test files. However, it can be viewed as an example, so
 to know how to use them, you can refer to `src/*` for details.
@@ -256,6 +178,21 @@ The app will be run on port 5000 with https and support hot-loading. (If the bro
 
 
 ## Cheatsheet
+
+### Network ID
+
+| Chain | Network | ID |
+| :-: | - | - |
+| Ethereum | Mainnet | 1 |
+| Ethereum | Ropsten | 3 |
+| Ethereum | Rinkeby | 4 |
+| Ethereum | Goerli  | 5 |
+| Ethereum | Kovan   | 42 |
+||
+| Binance | Mainnet  | 1 |
+| Binance | Testnet  | 2 |
+
+### Commands
 
 | # | Commands | Descriptions |
 | :-: | - | - |

@@ -1,130 +1,18 @@
-var { Metamask, Ledger, Trezor, Isoxys } = require('capsule-core-js');
-var StateMaintainer = require('../stateMaintainer');
+var { Metamask, Ledger, Trezor, Trust, MEW, Isoxys } = require('capsule-core-js');
 
 const ERROR = 'Invalid state of finite state machine';
 
 class Web3Factory {
-  constructor(restriedNetwork, pageRefreshing) {
+  constructor(restriedNetwork) {
     this.restriedNetwork = restriedNetwork;
-    this.pageRefreshing = pageRefreshing;
-    this.SM = new StateMaintainer();
-
-    if (!this.pageRefreshing) this.SM.clearState();
-  }
-
-  isSessionMaintained = (callback) => {
-    if (!this.pageRefreshing) return null;
-    return this.SM.getState(callback);
-  }
-
-  clearSession = () => {
-    this.SM.clearState();
   }
 
   generate = (fmState, callback) => {
-    let _callback = (er, provider) => {
-      if (er) return callback(er, null);
-      if (this.pageRefreshing && fmState.step === 'Success') {
-        // Not support Hybridwallet and Trezor yet
-        if (fmState.type !== 'hybridwallet') this.SM.setState(fmState);
-      }
-      return callback(null, provider);
-    }
-
     switch (fmState.wallet) {
 
       // Metamask
       case 'metamask':
-        let metamask = new Metamask(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
-        return metamask.setAccountByMetamask((er, re) => {
-          if (er) return _callback(er, null);
-          return _callback(null, metamask);
-        });
-
-      // Ledger
-      case 'ledger':
-        let ledger = new Ledger(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
-        switch (fmState.model) {
-          case 'ledger-nano-s':
-            return ledger.setAccountByLedgerNanoS(fmState.dpath, fmState.index, (er, re) => {
-              if (er) return _callback(er, null);
-              return _callback(null, ledger);
-            });
-          default:
-            return _callback(ERROR, null);
-        }
-
-      // Trezor
-      case 'trezor':
-        let trezor = new Trezor(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
-        switch (fmState.model) {
-          case 'trezor-one':
-            return trezor.setAccountByTrezorOne(fmState.dpath, fmState.index, (er, re) => {
-              if (er) return _callback(er, null);
-              return _callback(null, trezor);
-            });
-          default:
-            return _callback(ERROR, null);
-        }
-
-      // MyEtherWallet
-      case 'mew':
-        return _callback(null, fmState.provider);
-
-      // Trust Wallet
-      case 'trust':
-        return _callback(null, fmState.provider);
-
-      // Isoxys
-      case 'isoxys':
-        let isoxys = new Isoxys(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
-        switch (fmState.model) {
-          case 'mnemonic':
-            return isoxys.setAccountByMnemonic(
-              fmState.asset.mnemonic,
-              fmState.asset.password,
-              fmState.dpath,
-              fmState.index,
-              window.kambriaWallet.getPassphrase.open,
-              (er, re) => {
-                if (er) return _callback(er, null);
-                return _callback(null, isoxys);
-              });
-          case 'keystore':
-            return isoxys.setAccountByKeystore(
-              fmState.asset.keystore,
-              fmState.asset.password,
-              window.kambriaWallet.getPassphrase.open,
-              (er, re) => {
-                if (er) return _callback(er, null);
-                return _callback(null, isoxys);
-              });
-          case 'private-key':
-            return isoxys.setAccountByPrivatekey(
-              fmState.asset.privateKey,
-              window.kambriaWallet.getPassphrase.open,
-              (er, re) => {
-                if (er) return _callback(er, null);
-                return _callback(null, isoxys);
-              });
-          default:
-            return _callback(ERROR, null);
-        }
-
-      // Default
-      default:
-        return _callback(ERROR, null);
-    }
-  }
-
-  regenerate = (fmState, callback) => {
-    if (fmState.blockchain !== 'ethereum') return callback('Unavailable blockchain type', null);
-
-    switch (fmState.wallet) {
-
-      // Metamask
-      case 'metamask':
-        let metamask = new Metamask(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
+        let metamask = new Metamask(window.kambriaWallet.networkId.ethereum, fmState.type, this.restriedNetwork);
         return metamask.setAccountByMetamask((er, re) => {
           if (er) return callback(er, null);
           return callback(null, metamask);
@@ -132,7 +20,7 @@ class Web3Factory {
 
       // Ledger
       case 'ledger':
-        let ledger = new Ledger(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
+        let ledger = new Ledger(window.kambriaWallet.networkId.ethereum, fmState.type, this.restriedNetwork);
         switch (fmState.model) {
           case 'ledger-nano-s':
             return ledger.setAccountByLedgerNanoS(fmState.dpath, fmState.index, (er, re) => {
@@ -145,7 +33,112 @@ class Web3Factory {
 
       // Trezor
       case 'trezor':
-        let trezor = new Trezor(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
+        let trezor = new Trezor(window.kambriaWallet.networkId.ethereum, fmState.type, this.restriedNetwork);
+        switch (fmState.model) {
+          case 'trezor-one':
+            return trezor.setAccountByTrezorOne(fmState.dpath, fmState.index, (er, re) => {
+              if (er) return callback(er, null);
+              return callback(null, trezor);
+            });
+          default:
+            return callback(ERROR, null);
+        }
+
+      // MyEtherWallet
+      case 'mew':
+        return callback(null, fmState.provider);
+
+      // Trust Wallet
+      case 'trust':
+        return callback(null, fmState.provider);
+
+      // Isoxys
+      case 'isoxys':
+        let isoxys = new Isoxys(window.kambriaWallet.networkId.ethereum, fmState.type, this.restriedNetwork);
+        switch (fmState.model) {
+          case 'mnemonic':
+            return isoxys.setAccountByMnemonic(
+              fmState.asset.mnemonic,
+              fmState.asset.password,
+              fmState.dpath,
+              fmState.index,
+              window.kambriaWallet.getPassphrase.open,
+              (er, re) => {
+                if (er) return callback(er, null);
+                return callback(null, isoxys);
+              });
+          case 'keystore':
+            return isoxys.setAccountByKeystore(
+              fmState.asset.keystore,
+              fmState.asset.password,
+              window.kambriaWallet.getPassphrase.open,
+              (er, re) => {
+                if (er) return callback(er, null);
+                return callback(null, isoxys);
+              });
+          case 'private-key':
+            return isoxys.setAccountByPrivatekey(
+              fmState.asset.privateKey,
+              window.kambriaWallet.getPassphrase.open,
+              (er, re) => {
+                if (er) return callback(er, null);
+                return callback(null, isoxys);
+              });
+          default:
+            return callback(ERROR, null);
+        }
+
+      // Default
+      default:
+        return callback(ERROR, null);
+    }
+  }
+
+  regenerate = (fmState, callback) => {
+    if (fmState.blockchain !== 'ethereum') return callback('Unavailable blockchain type', null);
+
+    switch (fmState.wallet) {
+
+      // Metamask
+      case 'metamask':
+        let metamask = new Metamask(window.kambriaWallet.networkId.ethereum, fmState.type, this.restriedNetwork);
+        return metamask.setAccountByMetamask((er, re) => {
+          if (er) return callback(er, null);
+          return callback(null, metamask);
+        });
+
+      // Ledger
+      case 'ledger':
+        let ledger = new Ledger(window.kambriaWallet.networkId.ethereum, fmState.type, this.restriedNetwork);
+        switch (fmState.model) {
+          case 'ledger-nano-s':
+            return ledger.setAccountByLedgerNanoS(fmState.dpath, fmState.index, (er, re) => {
+              if (er) return callback(er, null);
+              return callback(null, ledger);
+            });
+          default:
+            return callback(ERROR, null);
+        }
+
+      // Trust Wallet
+      case 'trust':
+        let trust = new Trust(window.kambriaWallet.networkId.ethereum, fmState.type, this.restriedNetwork);
+        return trust.setAccountByTrustWallet(window.kambriaWallet.getAuthentication, (er, re) => {
+          if (er) return callback(er, null);
+          return callback(null, trust);
+        });
+
+      // My Ether Wallet
+      case 'mew':
+        let mew = new MEW(window.kambriaWallet.networkId.ethereum, fmState.type, this.restriedNetwork);
+        return mew.setAccountByMEW(window.kambriaWallet.getAuthentication, (er, re) => {
+          if (er) return callback(er, null);
+          return callback(null, trust);
+        });
+
+      // Trezor
+      case 'trezor':
+        let trezor = new Trezor(window.kambriaWallet.networkId.ethereum, fmState.type, this.restriedNetwork);
         switch (fmState.model) {
           case 'trezor-one':
             return trezor.setAccountByTrezorOne(fmState.dpath, fmState.index, (er, re) => {
@@ -158,7 +151,7 @@ class Web3Factory {
 
       // Isoxys
       case 'isoxys':
-        let isoxys = new Isoxys(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
+        let isoxys = new Isoxys(window.kambriaWallet.networkId.ethereum, fmState.type, this.restriedNetwork);
         let accOpts = { getPassphrase: window.kambriaWallet.getPassphrase.open };
         return isoxys.setWallet(accOpts, (er, re) => {
           if (er) return callback(er, null);

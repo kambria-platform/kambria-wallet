@@ -1,6 +1,8 @@
 import React, { Component, Fragment } from 'react';
 
 // Heros to operate and protect Kambria Bridge
+import StateMaintainer from '../stateMaintainer';
+import BrowserRereshing from './browserRefreshing';
 import FiniteStateMachine from './finiteStateMachine';
 import Web3Factory from './web3Factory';
 
@@ -40,6 +42,7 @@ class Ethereum extends Component {
 
     this.done = props.done;
     this.options = { ...DEFAULT_OPT, ...props.options }
+    this.SM = new StateMaintainer();
     this.FSM = new FiniteStateMachine();
     this.W3F = new Web3Factory(this.options.restrictedNetwork, this.options.pageRefreshing);
 
@@ -57,15 +60,16 @@ class Ethereum extends Component {
       return this.setState({ step: state.step });
     }
     window.kambriaWallet.logout = () => {
-      this.W3F.clearSession();
+      this.SM.clearState();
     }
   }
 
   componentDidMount() {
+    if (!this.options.pageRefreshing) return;
     // Regenerate state
-    this.W3F.isSessionMaintained(session => {
-      if (session) this.W3F.regenerate(session, (er, provider) => {
-        if (er) return;
+    this.SM.isStateMaintained(state => {
+      if (state) this.W3F.regenerate(state, (er, provider) => {
+        if (er) return window.kambriaWallet.logout();
         window.kambriaWallet.provider = provider;
         return this.done(null, provider);
       });
@@ -96,6 +100,8 @@ class Ethereum extends Component {
     if (state.step === 'Error') return this.onError(ERROR);
     // Success case
     if (state.step === 'Success') return this.onClose(() => {
+      // Store state
+      if (this.options.pageRefreshing && BrowserRereshing.isSupported(state.model)) this.SM.setState(state);
       this.W3F.generate(state, (er, provider) => {
         if (er) return this.onError(er);
         window.kambriaWallet.provider = provider;

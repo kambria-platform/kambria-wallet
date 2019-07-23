@@ -19,8 +19,8 @@
   "license": "ISC",
   "dependencies": {
     "@binance-chain/javascript-sdk": "^2.14.2",
-    "binance-core-js": "^1.0.6",
-    "capsule-core-js": "^1.0.9",
+    "binance-core-js": "^1.0.8",
+    "capsule-core-js": "^1.0.11",
     "classnames": "^2.2.6",
     "qrcode.react": "^0.9.3",
     "react-spinners": "^0.5.8"

@@ -23,7 +23,7 @@ class TrustAsset extends Component {
     }
 
     this.done = props.done;
-    this.trust = new Trust(window.kambriaWallet.networkId, 'hybridwallet', true);
+    this.trust = new Trust(window.kambriaWallet.networkId.binance, 'hybridwallet', true);
   }
 
   establishTheConnection = () => {

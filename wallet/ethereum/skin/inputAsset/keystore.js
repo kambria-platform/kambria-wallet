@@ -54,7 +54,7 @@ class KeystoreAsset extends Component {
   checkKeystore = (callback) => {
     this.setState({ loading: true }, () => {
       // Fetch the first address to know whether good file
-      let isoxys = new Isoxys(window.kambriaWallet.networkId, 'softwallet', true);
+      let isoxys = new Isoxys(window.kambriaWallet.networkId.ethereum, 'softwallet', true);
       isoxys.getAccountByKeystore(this.state.keystore, this.state.password, (er, re) => {
         this.setState({ loading: false });
         if (er || re.lenght <= 0) return callback(false);

@@ -28,7 +28,7 @@ class TrezorOneAsset extends Component {
   checkTheConnection = () => {
     this.setState({ message: STATUS.TEST, loading: true }, () => {
       // Fetch the first address to know whether devide connected
-      let trezor = new Trezor(window.kambriaWallet.networkId, 'hardwallet', true);
+      let trezor = new Trezor(window.kambriaWallet.networkId.ethereum, 'hardwallet', true);
       trezor.getAccountsByTrezorOne("m/44'/60'/0'/0", 1, 0, (er, re) => {
         if (er || re.length < 0) return this.setState({ message: STATUS.FAIL, loading: false });
         return this.done({ wallet: 'trezor', model: 'trezor-one' });

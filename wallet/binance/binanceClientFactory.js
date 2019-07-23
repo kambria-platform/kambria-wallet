@@ -1,103 +1,18 @@
-var { Ledger, BinanceSDK } = require('binance-core-js');
-var StateMaintainer = require('../stateMaintainer');
+var { Ledger, Trust, BinanceSDK } = require('binance-core-js');
 
 const ERROR = 'Invalid state of finite state machine';
 
 class BinanceClientFactory {
-  constructor(restriedNetwork, pageRefreshing) {
+  constructor(restriedNetwork) {
     this.restriedNetwork = restriedNetwork;
-    this.pageRefreshing = pageRefreshing;
-
-    this.SM = new StateMaintainer();
-    if (!this.pageRefreshing) this.SM.clearState();
-  }
-
-  isSessionMaintained = (callback) => {
-    if (!this.pageRefreshing) return callback(null);
-    return this.SM.getState(callback);
-  }
-
-  clearSession = () => {
-    this.SM.clearState();
   }
 
   generate = (fmState, callback) => {
-    let _callback = (er, provider) => {
-      if (er) return callback(er, null);
-      if (this.pageRefreshing && fmState.step === 'Success') {
-        // Not support Hybridwallet and Trezor yet
-        if (fmState.type !== 'hybridwallet') this.SM.setState(fmState);
-      }
-      return callback(null, provider);
-    }
-
     switch (fmState.wallet) {
 
       // Ledger
       case 'ledger':
-        let ledger = new Ledger(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
-        switch (fmState.model) {
-          case 'ledger-nano-s':
-            return ledger.setAccountByLedgerNanoS(fmState.dpath, fmState.index, (er, re) => {
-              if (er) return _callback(er, null);
-              return _callback(null, ledger);
-            });
-          default:
-            return _callback(ERROR, null);
-        }
-
-      // Trust Wallet
-      case 'trust':
-        return _callback(null, fmState.provider);
-
-      // BinanceSDK
-      case 'binance-sdk':
-        let binanceSDK = new BinanceSDK(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
-        switch (fmState.model) {
-          case 'mnemonic':
-            return binanceSDK.setAccountByMnemonic(
-              fmState.asset.mnemonic,
-              fmState.index,
-              window.kambriaWallet.getPassphrase.open,
-              (er, re) => {
-                if (er) return _callback(er, null);
-                return _callback(null, binanceSDK);
-              });
-          case 'keystore':
-            return binanceSDK.setAccountByKeystore(
-              fmState.asset.keystore,
-              fmState.asset.password,
-              window.kambriaWallet.getPassphrase.open,
-              (er, re) => {
-                if (er) return _callback(er, null);
-                return _callback(null, binanceSDK);
-              });
-          case 'private-key':
-            return binanceSDK.setAccountByPrivatekey(
-              fmState.asset.privateKey,
-              window.kambriaWallet.getPassphrase.open,
-              (er, re) => {
-                if (er) return _callback(er, null);
-                return _callback(null, binanceSDK);
-              });
-          default:
-            return _callback(ERROR, null);
-        }
-
-      // Default
-      default:
-        return _callback(ERROR, null);
-    }
-  }
-
-  regenerate = (fmState, callback) => {
-    if (fmState.blockchain !== 'binance') return callback('Unavailable blockchain type', null);
-
-    switch (fmState.wallet) {
-
-      // Ledger
-      case 'ledger':
-        let ledger = new Ledger(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
+        let ledger = new Ledger(window.kambriaWallet.networkId.binance, fmState.type, this.restriedNetwork);
         switch (fmState.model) {
           case 'ledger-nano-s':
             return ledger.setAccountByLedgerNanoS(fmState.dpath, fmState.index, (er, re) => {
@@ -108,9 +23,79 @@ class BinanceClientFactory {
             return callback(ERROR, null);
         }
 
+      // Trust Wallet
+      case 'trust':
+        return callback(null, fmState.provider);
+
       // BinanceSDK
       case 'binance-sdk':
-        let binanceSDK = new BinanceSDK(window.kambriaWallet.networkId, fmState.type, this.restriedNetwork);
+        let binanceSDK = new BinanceSDK(window.kambriaWallet.networkId.binance, fmState.type, this.restriedNetwork);
+        switch (fmState.model) {
+          case 'mnemonic':
+            return binanceSDK.setAccountByMnemonic(
+              fmState.asset.mnemonic,
+              fmState.index,
+              window.kambriaWallet.getPassphrase.open,
+              (er, re) => {
+                if (er) return callback(er, null);
+                return callback(null, binanceSDK);
+              });
+          case 'keystore':
+            return binanceSDK.setAccountByKeystore(
+              fmState.asset.keystore,
+              fmState.asset.password,
+              window.kambriaWallet.getPassphrase.open,
+              (er, re) => {
+                if (er) return callback(er, null);
+                return callback(null, binanceSDK);
+              });
+          case 'private-key':
+            return binanceSDK.setAccountByPrivatekey(
+              fmState.asset.privateKey,
+              window.kambriaWallet.getPassphrase.open,
+              (er, re) => {
+                if (er) return callback(er, null);
+                return callback(null, binanceSDK);
+              });
+          default:
+            return callback(ERROR, null);
+        }
+
+      // Default
+      default:
+        return callback(ERROR, null);
+    }
+  }
+
+  regenerate = (fmState, callback) => {
+    if (fmState.blockchain !== 'binance') return callback('Unavailable blockchain type', null);
+
+    switch (fmState.wallet) {
+
+      // Ledger
+      case 'ledger':
+        let ledger = new Ledger(window.kambriaWallet.networkId.binance, fmState.type, this.restriedNetwork);
+        switch (fmState.model) {
+          case 'ledger-nano-s':
+            return ledger.setAccountByLedgerNanoS(fmState.dpath, fmState.index, (er, re) => {
+              if (er) return callback(er, null);
+              return callback(null, ledger);
+            });
+          default:
+            return callback(ERROR, null);
+        }
+
+      // Trust Wallet
+      case 'trust':
+        let trust = new Trust(window.kambriaWallet.networkId.binance, fmState.type, this.restriedNetwork);
+        return trust.setAccountByTrustWallet(window.kambriaWallet.getAuthentication, (er, re) => {
+          if (er) return callback(er, null);
+          return callback(null, trust);
+        });
+
+      // BinanceSDK
+      case 'binance-sdk':
+        let binanceSDK = new BinanceSDK(window.kambriaWallet.networkId.binance, fmState.type, this.restriedNetwork);
         let accOpts = { getPassphrase: window.kambriaWallet.getPassphrase.open };
         return binanceSDK.setWallet(accOpts, (er, re) => {
           if (er) return callback(er, null);

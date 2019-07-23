@@ -6,6 +6,7 @@ var binanceCoreCache = require('binance-core-js/dist/storage').cache;
 const ADDRESS = require('./address');
 const EVENT = require('./event');
 const STORAGE = window.localStorage;
+const MEMORY = window.sessionStorage;
 
 class StateMaintainer {
   constructor() {
@@ -16,6 +17,10 @@ class StateMaintainer {
   /**
    * Public functions
    */
+  isStateMaintained(callback) {
+    if (!MEMORY.getItem(ADDRESS.BEACON)) return null;
+    return this.getState(callback);
+  }
 
   getState = (callback) => {
     let data = STORAGE.getItem(ADDRESS.MAINTAINER);
@@ -30,10 +35,12 @@ class StateMaintainer {
   }
 
   setState = (value) => {
-    let state = JSON.parse(JSON.stringify(value));
+    let state = { ...value } // Trick to copy object
     delete state.step;
     delete state.asset;
+    delete state.provider;
     STORAGE.setItem(ADDRESS.MAINTAINER, JSON.stringify(state));
+    MEMORY.setItem(ADDRESS.BEACON, 'The session is being maintained');
     this._emitEvent(EVENT.SET_DATA);
   }
 

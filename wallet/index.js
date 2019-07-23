@@ -21,7 +21,10 @@ const DEFAULT_STATE = {
   qrcode: null,
 }
 const DEFAULT_OPT = {
-  networkId: 1,
+  networkId: {
+    ethereum: 1,
+    binance: 1
+  },
   restrictedNetwork: true,
   pageRefreshing: true
 }
@@ -31,8 +34,8 @@ class KambriaWallet extends Component {
   constructor(props) {
     super(props);
 
-    this.done = props.done;
     this.options = { ...DEFAULT_OPT, ...props.options }
+    this.done = props.done;
 
     this.state = {
       ...DEFAULT_STATE,
@@ -43,7 +46,7 @@ class KambriaWallet extends Component {
      * Group of global functions
      */
     window.kambriaWallet = { author: 'Tu Phan', git: 'https://github.com/kambria-platform/kambria-wallet' }
-    window.kambriaWallet.networkId = this.options.networkId; // mainnet as default;
+    window.kambriaWallet.networkId = this.options.networkId;
     window.kambriaWallet.github = () => {
       window.open('https://github.com/kambria-platform/kambria-wallet', '_blank');
     }
@@ -73,6 +76,20 @@ class KambriaWallet extends Component {
         this.setState({ authetication: false, qrcode: null, returnAuthetication: null });
       },
     }
+  }
+
+  onEthereum = (er, provider) => {
+    if (er) return this.done(er, null);
+    if (!provider) return this.done(null, null);
+    window.kambriaWallet.blockchain = 'ethereum';
+    return this.done(null, { blockchain: 'ethereum', provider: provider });
+  }
+
+  onBinance = (er, provider) => {
+    if (er) return this.done(er, null);
+    if (!provider) return this.done(null, null);
+    window.kambriaWallet.blockchain = 'binance';
+    return this.done(null, { blockchain: 'binance', provider: provider });
   }
 
   selectBlockchain = (blockchain) => {
@@ -147,8 +164,8 @@ class KambriaWallet extends Component {
           </div>
         </Modal>
 
-        <Ethereum visible={this.state.blockchain === 'ethereum'} options={this.options} done={this.done} selectBlockchain={this.selectBlockchain} />
-        <Binance visible={this.state.blockchain === 'binance'} options={this.options} done={this.done} selectBlockchain={this.selectBlockchain} />
+        <Ethereum visible={this.state.blockchain === 'ethereum'} options={this.options} done={this.onEthereum} selectBlockchain={this.selectBlockchain} />
+        <Binance visible={this.state.blockchain === 'binance'} options={this.options} done={this.onBinance} selectBlockchain={this.selectBlockchain} />
 
         <InputPassphrase visible={this.state.passphrase} done={(er, re) => this.state.returnPassphrase(er, re)} />
         <GetAuthentication visible={this.state.authetication} qrcode={this.state.qrcode} done={(er, re) => this.state.returnAuthetication(er, re)} />
