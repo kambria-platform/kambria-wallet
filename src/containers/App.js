@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Link, Switch, Redirect } from 'react-router-dom';
 
-import TestWallet from './testWallet';
+import Test from './test';
 
 class App extends Component {
   render() {
     return (
       <BrowserRouter>
         <div>
-          <header>
-            <Link to='/test-wallet'>Test Wallet</Link>
+          <header style={{ display: "flex" }}>
+            <Link style={{ margin: "10px" }} to='/test'>Test Wallet</Link>
           </header>
-          <main>
+          <main style={{ margin: "10px" }}>
             <Switch>
-              <Redirect exact from='/' to='/test-wallet' />
-              <Route exact path='/test-wallet' component={TestWallet} />
+              <Redirect exact from='/' to='/test' />
+              <Route exact path='/test' component={Test} />
             </Switch>
           </main>
         </div>
