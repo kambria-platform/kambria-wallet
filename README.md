@@ -3,9 +3,9 @@
 This module is a build-in zero client node as Metamask. It's supporting most of basic functions 
 such as account management, transacion, contract, ...  With some restrictions of browser, the module will serve fully functions in Chrome and partly in the other browsers.
 
-* In **VERSION 2.x.x** module start to support React beside build-in zero clients.
-* In **VERSION 3.x.x** module start to support mobile devides.
-* In **VERSION 4.x.x** module start to support Binance chain.
+* In **VERSION 2.x.x**, the package starts to support React beside build-in zero clients.
+* In **VERSION 3.x.x**, the package starts to support mobile devides.
+* In **VERSION 4.x.x**, the package starts to support Binance chain.
 
 ## Install
 
@@ -15,7 +15,7 @@ npm install --save @kambria/kambria-wallet
 
 # For browsers
 
-## Prequisitions (In case, you want to install web3 by yourself)
+## Prequisitions (In case you would like to install web3 by yourself)
 
 * Install web3: ***Must be 0.20.x verison.***
 

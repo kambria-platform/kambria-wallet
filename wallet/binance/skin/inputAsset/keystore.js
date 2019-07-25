@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-var { Isoxys } = require('capsule-core-js');
 
 // Setup CSS Module
 import classNames from 'classnames/bind';
 import styles from '../../../static/styles/index.module.css';
 var cx = classNames.bind(styles);
 
-var BnbClient = require('@binance-chain/javascript-sdk');
+var { BnbClient } = require('binance-core-js');
 var crypto = BnbClient.crypto;
 
 const DEFAULT_STATE = {

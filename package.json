@@ -1,6 +1,6 @@
 {
   "name": "@kambria/kambria-wallet",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -18,8 +18,7 @@
   "author": "tphanson <tphanson@kambria.io>",
   "license": "ISC",
   "dependencies": {
-    "@binance-chain/javascript-sdk": "^2.14.2",
-    "binance-core-js": "^1.0.8",
+    "binance-core-js": "^1.0.9",
     "capsule-core-js": "^1.0.11",
     "classnames": "^2.2.6",
     "qrcode.react": "^0.9.3",
