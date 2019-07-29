@@ -32,7 +32,7 @@ class PrivateKeyAsset extends Component {
     this.checkPrivatekey(ok => {
       if (!ok) return this.setState({ error: 'Invalid private key!' });
 
-      this.returnData2Parent();
+      this.returnDataToParent();
     });
   }
 
@@ -48,7 +48,7 @@ class PrivateKeyAsset extends Component {
     });
   }
 
-  returnData2Parent = () => {
+  returnDataToParent = () => {
     return this.done({
       model: 'private-key',
       asset: {
@@ -77,9 +77,10 @@ class PrivateKeyAsset extends Component {
             onChange={this.handleChange} />
         </div>
         <div className={cx("form-group")}>
-          <button
-            className={cx("btn", "btn-sm", "btn-primary", "d-block", "text-left")}
-            onClick={this.handleSubmit}>OK</button>
+          <p className={cx("text-danger")}>{this.state.error}</p>
+        </div>
+        <div className={cx("form-group")}>
+          <button className={cx("btn", "btn-sm", "btn-primary", "d-block", "text-left")} onClick={this.handleSubmit}>OK</button>
         </div>
       </div>
     );

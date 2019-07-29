@@ -31,10 +31,10 @@ class MnemonicAsset extends Component {
   }
 
   handleSubmit = () => {
-    this.returnData2Parent();
+    this.returnDataToParent();
   }
 
-  returnData2Parent = () => {
+  returnDataToParent = () => {
     return this.done({
       model: 'mnemonic',
       asset: {
