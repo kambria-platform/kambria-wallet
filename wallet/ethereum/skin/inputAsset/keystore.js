@@ -45,9 +45,9 @@ class KeystoreAsset extends Component {
 
   handleSubmit = () => {
     this.checkKeystore(ok => {
-      if (!ok) return this.setState({ error: 'Cannot decrypt your keystore!' });
+      if (!ok) return this.setState({ error: 'Invalid password!' });
 
-      this.returnData2Parent();
+      this.returnDataToParent();
     });
   }
 
@@ -63,7 +63,7 @@ class KeystoreAsset extends Component {
     });
   }
 
-  returnData2Parent = () => {
+  returnDataToParent = () => {
     this.done({
       model: 'keystore',
       asset: {
@@ -99,6 +99,9 @@ class KeystoreAsset extends Component {
             id="enter-password-key"
             placeholder="Password"
             onChange={this.handleChangePassword} />
+        </div>
+        <div className={cx("form-group")}>
+          <p className={cx("text-danger")}>{this.state.error}</p>
         </div>
         <div className={cx("form-group")}>
           <button className={cx("btn", "btn-sm", "btn-primary", "d-block", "text-left")} onClick={this.handleSubmit}>OK</button>

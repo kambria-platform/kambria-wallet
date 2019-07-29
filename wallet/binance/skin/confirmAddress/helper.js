@@ -73,6 +73,7 @@ class Helper {
         for (let i = 0; i < re.length; i++) {
           if (re[i].symbol == 'BNB') return resolve(re[i].free);
         }
+        return resolve(0);
       }).catch(er => {
         if (er) return reject(er);
       });
