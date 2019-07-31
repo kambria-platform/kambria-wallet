@@ -45,7 +45,6 @@ render() {
 2. `options`: `<object>` - wallet configurations. [Click here](#cheatsheet) to see the `networkId` detail.
    ```
    {
-     restrictedNetwork: <boolean> (true at default) - prevent changing network
      pageRefreshing: <boolean> (true at default) - support browser to maintain the session when refreshing
      networkId: {
        ethereum: <number> - Ethereum network ID
@@ -77,7 +76,6 @@ class TestWallet extends Component {
     }
 
     this.options = {
-      restrictedNetwork: true,
       pageRefreshing: true,
       networkId: {
         ethereum: 4,

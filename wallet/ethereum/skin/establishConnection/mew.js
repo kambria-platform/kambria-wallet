@@ -23,11 +23,15 @@ class MewAsset extends Component {
     }
 
     this.done = props.done;
-    this.mew = new MEW(window.kambriaWallet.networkId.ethereum, 'hybridwallet', true);
   }
 
   establishTheConnection = () => {
-    this.mew.setAccountByMEW(window.kambriaWallet.getAuthentication, (er, re) => {
+    let options = {
+      getApproval: window.kambriaWallet.getApproval,
+      getAuthentication: window.kambriaWallet.getAuthentication
+    }
+    this.mew = new MEW(window.kambriaWallet.networkId.ethereum, options);
+    this.mew.setAccountByMEW((er, re) => {
       if (er) return this.setState({ message: STATUS.FAIL });
       return this.done({ wallet: 'mew', model: 'my-ether-wallet', provider: this.mew });
     });

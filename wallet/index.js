@@ -6,6 +6,8 @@ import Ethereum from './ethereum';
 import Binance from './binance';
 import InputPassphrase from './core/inputPassphrase';
 import GetAuthentication from './core/getAuthentication';
+import GetApproval from './core/getApproval';
+import GetWaiting from './core/getWaiting';
 
 // Setup CSS Module
 import classNames from 'classnames/bind';
@@ -14,19 +16,25 @@ var cx = classNames.bind(styles);
 
 // Constants
 const DEFAULT_STATE = {
+  // Wallet
   visible: false,
   blockchain: null,
-  background: false,
+  // Passphrase  
   passphrase: false,
+  // Authentication
   authetication: false,
   qrcode: null,
+  // Waiting
+  waiting: false,
+  // Approval
+  approval: false,
+  txParams: null,
 }
 const DEFAULT_OPT = {
   networkId: {
     ethereum: 1,
     binance: 1
   },
-  restrictedNetwork: true,
   pageRefreshing: true
 }
 
@@ -58,15 +66,10 @@ class KambriaWallet extends Component {
     window.kambriaWallet.support = () => {
       window.open('mailto:support@kambria.io', '_blank');
     }
-    window.kambriaWallet.getPassphrase = {
-      open: (callback) => {
-        this.setState({ passphrase: false, returnPassphrase: null }, () => {
-          this.setState({ passphrase: true, returnPassphrase: callback });
-        });
-      },
-      close: () => {
-        this.setState({ passphrase: false, returnPassphrase: null });
-      },
+    window.kambriaWallet.getPassphrase = (callback) => {
+      this.setState({ passphrase: false, returnPassphrase: null }, () => {
+        this.setState({ passphrase: true, returnPassphrase: callback });
+      });
     }
     window.kambriaWallet.getAuthentication = {
       open: (qrcode, callback) => {
@@ -77,6 +80,19 @@ class KambriaWallet extends Component {
       close: () => {
         this.setState({ authetication: false, qrcode: null, returnAuthetication: null });
       },
+    }
+    window.kambriaWallet.getWaiting = {
+      open: () => {
+        this.setState({ waiting: true });
+      },
+      close: () => {
+        this.setState({ waiting: false });
+      }
+    }
+    window.kambriaWallet.getApproval = (txParams, callback) => {
+      this.setState({ approval: false, txParams: null, returnApproval: null }, () => {
+        this.setState({ approval: true, txParams: txParams, returnApproval: callback });
+      });
     }
     window.kambriaWallet.home = () => {
       this.selectBlockchain();
@@ -175,8 +191,10 @@ class KambriaWallet extends Component {
         <Ethereum visible={this.state.blockchain === 'ethereum'} options={this.options} done={this.onEthereum} />
         <Binance visible={this.state.blockchain === 'binance'} options={this.options} done={this.onBinance} />
 
-        <InputPassphrase visible={this.state.passphrase} done={(er, re) => this.state.returnPassphrase(er, re)} />
-        <GetAuthentication visible={this.state.authetication} qrcode={this.state.qrcode} done={(er, re) => this.state.returnAuthetication(er, re)} />
+        <InputPassphrase visible={this.state.passphrase} done={this.state.returnPassphrase} />
+        <GetAuthentication visible={this.state.authetication} qrcode={this.state.qrcode} done={this.state.returnAuthetication} />
+        <GetApproval visible={this.state.approval} txParams={this.state.txParams} done={this.state.returnApproval} />
+        <GetWaiting visible={this.state.waiting} />
       </Fragment>
     );
   }

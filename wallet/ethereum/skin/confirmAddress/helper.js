@@ -5,7 +5,11 @@ const ERROR = 'Cannot load addresses';
 class Helper {
 
   static getAddressByIsoxys(data, dpath, limit, page) {
-    let isoxys = new Isoxys(window.kambriaWallet.networkId.ethereum, data.type, true);
+    let options = {
+      getPassphrase: window.kambriaWallet.getPassphrase,
+      getApproval: window.kambriaWallet.getApproval
+    }
+    let isoxys = new Isoxys(window.kambriaWallet.networkId.ethereum, options);
     return new Promise((resolve, reject) => {
       switch (data.model) {
         // Mnemonic
@@ -45,7 +49,11 @@ class Helper {
   }
 
   static getAddressByLedger(data, dpath, limit, page) {
-    let ledger = new Ledger(window.kambriaWallet.networkId.ethereum, data.type, true);
+    let options = {
+      getApproval: window.kambriaWallet.getApproval,
+      getWaiting: window.kambriaWallet.getWaiting
+    }
+    let ledger = new Ledger(window.kambriaWallet.networkId.ethereum, options);
     return new Promise((resolve, reject) => {
       switch (data.model) {
         // Ledger Nano S
@@ -66,7 +74,11 @@ class Helper {
   }
 
   static getAddressByTrezor(data, dpath, limit, page) {
-    let trezor = new Trezor(window.kambriaWallet.networkId.ethereum, data.type, true);
+    let options = {
+      getApproval: window.kambriaWallet.getApproval,
+      getWaiting: window.kambriaWallet.getWaiting
+    }
+    let trezor = new Trezor(window.kambriaWallet.networkId.ethereum, options);
     return new Promise((resolve, reject) => {
       switch (data.model) {
         // Trezor One

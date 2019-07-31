@@ -22,7 +22,6 @@ class Test extends Component {
         ethereum: config.ethereum.id,
         binance: config.binance.id
       },
-      restrictedNetwork: true,
       pageRefreshing: true
     };
   }

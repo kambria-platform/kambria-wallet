@@ -27,8 +27,12 @@ class LedgerNanoSAsset extends Component {
 
   checkTheConnection = () => {
     this.setState({ message: STATUS.TEST, loading: true }, () => {
-      // Fetch the first address to know whether devide connected
-      let ledger = new Ledger(window.kambriaWallet.networkId.binance, 'hardwallet', true);
+      // Fetch the first address to know whether devide connectedoptions
+      let options = {
+        getApproval: window.kambriaWallet.getApproval,
+        getWaiting: window.kambriaWallet.getWaiting
+      }
+      let ledger = new Ledger(window.kambriaWallet.networkId.binance, options);
       ledger.getAccountsByLedgerNanoS("m/44'/714'/0'/0", 1, 0, (er, re) => {
         if (er || re.lenght <= 0) return this.setState({ message: STATUS.FAIL, loading: false });
         return this.done({ wallet: 'ledger', model: 'ledger-nano-s' });
