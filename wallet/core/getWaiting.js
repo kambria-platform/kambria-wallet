@@ -15,7 +15,7 @@ class GetWaiting extends Component {
       <Modal visible={this.props.visible} className={cx("fade", "wallet-modal", "enter-passphrase")} dialogClassName={cx("modal-dialog-centered")}>
         <div className={cx("modal-body")}>
           <span className={cx("title", "d-block", "text-center", "mt-4")}>Waiting for transaction</span>
-          <p className={cx("d-block", "text-center", "mb-4")}>Please following the instruction on your devide!</p>
+          <p className={cx("d-block", "text-center", "mb-4")}>Please following instructions on your devide!</p>
           <PageLoader type="bar" />
         </div>
       </Modal>
