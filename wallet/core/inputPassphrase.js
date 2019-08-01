@@ -20,20 +20,18 @@ class InputPassphrase extends Component {
       visible: this.props.visible,
       ...DEFAULT_STATE
     }
-
-    this.done = props.done;
   }
 
   onClose = () => {
     this.setState({ visible: false }, () => {
-      this.done(ERROR, null);
+      this.props.done(ERROR, null);
     });
   }
 
   handleSubmit = () => {
     this.setState({ visible: false }, () => {
-      if (!this.state.passphrase) return this.done(ERROR, null);
-      return this.done(null, this.state.passphrase);
+      if (!this.state.passphrase) return this.props.done(ERROR, null);
+      return this.props.done(null, this.state.passphrase);
     });
   }
 

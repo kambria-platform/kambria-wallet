@@ -23,11 +23,15 @@ class TrustAsset extends Component {
     }
 
     this.done = props.done;
-    this.trust = new Trust(window.kambriaWallet.networkId.ethereum, 'hybridwallet', true);
   }
 
   establishTheConnection = () => {
-    this.trust.setAccountByTrustWallet(window.kambriaWallet.getAuthentication, (er, re) => {
+    let options = {
+      getApproval: window.kambriaWallet.getApproval,
+      getAuthentication: window.kambriaWallet.getAuthentication
+    }
+    this.trust = new Trust(window.kambriaWallet.networkId.ethereum, options);
+    this.trust.setAccountByTrustWallet((er, re) => {
       if (er) return this.setState({ message: STATUS.FAIL });
       return this.done({ wallet: 'trust', model: 'trust-wallet', provider: this.trust });
     });

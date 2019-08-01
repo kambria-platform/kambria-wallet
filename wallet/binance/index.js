@@ -28,7 +28,6 @@ const DEFAULT_STATE = {
 }
 const DEFAULT_OPT = {
   networkId: 1,
-  restrictedNetwork: true,
   pageRefreshing: true
 }
 
@@ -47,7 +46,7 @@ class Binance extends Component {
     this.options = { ...DEFAULT_OPT, ...props.options }
     this.SM = new StateMaintainer();
     this.FSM = new FiniteStateMachine();
-    this.BCF = new BinanceClientFactory(this.options.restrictedNetwork);
+    this.BCF = new BinanceClientFactory();
 
     this.state = {
       ...DEFAULT_STATE,

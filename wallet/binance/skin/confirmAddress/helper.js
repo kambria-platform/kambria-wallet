@@ -6,7 +6,11 @@ const ERROR = 'Cannot load addresses';
 class Helper {
 
   static getAddressByBinanceSDK(data, dpath, limit, page) {
-    let binanceSDK = new BinanceSDK(window.kambriaWallet.networkId.binance, data.type, true);
+    let options = {
+      getApproval: window.kambriaWallet.getApproval,
+      getPassphrase: window.kambriaWallet.getPassphrase
+    }
+    let binanceSDK = new BinanceSDK(window.kambriaWallet.networkId.binance, options);
     return new Promise((resolve, reject) => {
       switch (data.model) {
         // Mnemonic
@@ -44,7 +48,11 @@ class Helper {
   }
 
   static getAddressByLedger(data, dpath, limit, page) {
-    let ledger = new Ledger(window.kambriaWallet.networkId.binance, data.type, true);
+    let options = {
+      getApproval: window.kambriaWallet.getApproval,
+      getWaiting: window.kambriaWallet.getWaiting
+    }
+    let ledger = new Ledger(window.kambriaWallet.networkId.binance, options);
     return new Promise((resolve, reject) => {
       switch (data.model) {
         // Ledger Nano S

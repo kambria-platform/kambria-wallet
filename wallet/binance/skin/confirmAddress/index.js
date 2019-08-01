@@ -86,20 +86,6 @@ class ConfirmAddress extends Component {
     this.setState({ i: index });
   }
 
-  onDpath = (e) => {
-    this.setState({ dpath: e.target.value }, () => {
-      if (this.timeout) clearTimeout(this.timeout);
-      this.timeout = setTimeout(() => {
-        this.setState({ loading: true }, () => {
-          this.getAddress(this.props.data, this.state.limit, this.state.page, (er, re) => {
-            if (er) return this.setState({ loading: false, error: er });
-            return this.setState({ loading: false, addressList: re, error: null });
-          });
-        });
-      }, 1000);
-    });
-  }
-
   onPage = (step) => {
     let page = this.state.page + step;
     if (page < 0) page = 0;
@@ -152,8 +138,7 @@ class ConfirmAddress extends Component {
           <input
             className={cx("form-control", "mb-4")}
             type="text"
-            value={this.state.dpath}
-            onChange={this.onDpath} />
+            value={this.state.dpath} disabled />
           {this.state.loading ? <PageLoader type="bar" /> : null}
           <div className={cx("addresses")}>
             {this.showAddresses(this.state.i, this.state.addressList)}

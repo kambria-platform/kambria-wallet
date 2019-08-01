@@ -39,7 +39,11 @@ class PrivateKeyAsset extends Component {
   checkPrivatekey = (callback) => {
     this.setState({ loading: true }, () => {
       // Fetch the first address to know whether good file
-      let isoxys = new Isoxys(window.kambriaWallet.networkId.ethereum, 'softwallet', true);
+      let options = {
+        getApproval: window.kambriaWallet.getApproval,
+        getPassphrase: window.kambriaWallet.getPassphrase
+      }
+      let isoxys = new Isoxys(window.kambriaWallet.networkId.ethereum, options);
       isoxys.getAccountByPrivatekey(this.state.privateKey, (er, re) => {
         this.setState({ loading: false });
         if (er || re.lenght <= 0) return callback(false);
