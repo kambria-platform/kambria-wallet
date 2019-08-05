@@ -19,7 +19,7 @@ class SelectWallet extends Component {
   net = () => {
     let net = parseInt(window.kambriaWallet.networkId.binance);
     let Net = net === 1 ? 'Mainnet' : 'Testnet';
-    return <span className={cx("network", "binance", net)}>{Net} Network</span>
+    return <span className={cx("network", "binance")}>{Net} Network</span>
   }
 
   onHardwallet = () => {

@@ -21,7 +21,7 @@ class SelectWallet extends Component {
   net = () => {
     let net = util.getNetworkId(window.kambriaWallet.networkId.ethereum, 'string');
     let Net = net.charAt(0).toUpperCase() + net.slice(1)
-    return <span className={cx("network", "ethereum", net)}>{Net} Network</span>
+    return <span className={cx("network", "ethereum")}>{Net} Network</span>
   }
 
   onMetamask = () => {
