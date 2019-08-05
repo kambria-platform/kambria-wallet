@@ -53,7 +53,7 @@ class MnemonicAsset extends Component {
     return (
       <div className={cx("tab-pane", "fade", "show", "active")}>
         <div className={cx("form-group")}>
-          <label htmlFor="enter-seed">Enter mnemonic</label>
+          <label htmlFor="enter-seed">Enter Mnemonic</label>
           <input
             className={cx("form-control")}
             type="text"
@@ -64,7 +64,7 @@ class MnemonicAsset extends Component {
             onChange={this.handleChangeMnemonic} />
         </div>
         <div className={cx("form-group")}>
-          <label htmlFor="enter-password">Enter password (Optional)</label>
+          <label htmlFor="enter-password">Enter Password (Optional)</label>
           <input
             className={cx("form-control")}
             type="password"

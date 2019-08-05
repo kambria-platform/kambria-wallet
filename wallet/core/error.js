@@ -20,8 +20,8 @@ class ErrorForm extends Component {
         <div className={cx("modal-body")}>
           <button type="button" className={cx("close-button")} onClick={this.done}></button>
 
-          <span className={cx("title", "d-block", "text-center", "mt-4")} style={{ color: "black", fontSize: "24px" }}>An error has occurred</span>
-          <p className={cx("d-block", "text-center", "mb-4")} style={{ color: "#97a4ad", fontSize: "16px", lineHeight: "18px" }}>{this.props.error}</p>
+          <span className={cx("title", "d-block", "text-center", "mt-4")}>An error has occurred</span>
+          <p className={cx("subtitle", "d-block", "text-center", "mb-4")}>{this.props.error}</p>
           <button
             className={cx("btn", "btn-sm", "btn-primary", "d-block", "text-center", "mx-auto")}
             onClick={this.done}>OK</button>

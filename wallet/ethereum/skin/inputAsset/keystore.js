@@ -89,9 +89,9 @@ class KeystoreAsset extends Component {
           <label htmlFor="upload-keystore">Upload Keystore</label>
           <div className={cx("form-inline")}>
             <input id="keystore-file" type="file" accept="application/json" onChange={this.handleChangeFile} style={{ "display": "none" }} />
-            <input className={cx("form-control", "col-8", "mr-4")} type="text" id="upload-keystore" value={this.state.filename} disabled />
+            <input className={cx("form-control", "col-6", "col-md-8", "mr-auto")} type="text" id="upload-keystore" value={this.state.filename} disabled />
             <button
-              className={cx("btn", "btn-sm", "btn-primary-gray", "text-right", "col-3")}
+              className={cx("btn", "btn-sm", "btn-primary-gray", "text-center", "col-5", "col-md-3")}
               onClick={this.onBrowseFile}>Browse</button>
           </div>
         </div>
