@@ -151,7 +151,7 @@ class ConfirmAddress extends Component {
         <div className={cx("modal-body")}>
           <button type="button" className={cx("close-button")} onClick={this.onClose} />
 
-          <span className={cx("title", "d-block", "text-center", "mt-4")} style={{ color: "rgb(19, 205, 172)", fontSize: "24px" }}>Choose Your Wallet Address</span>
+          <span className={cx("title", "d-block", "text-center", "mt-4")}>Choose Your Wallet Address</span>
           <span
             className={cx("position-absolute")}
             style={{ cursor: "pointer", color: "black", top: "12px", left: "12px" }}

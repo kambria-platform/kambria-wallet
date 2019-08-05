@@ -47,9 +47,8 @@ class SelectWallet extends Component {
         <div className={cx("modal-body")}>
           <button type="button" className={cx("close-button")} onClick={this.onClose} />
 
-          <span className={cx("title", "d-block", "text-center", "mt-4")} style={{ color: "rgb(19, 205, 172)", fontSize: "24px" }}>Choose Your Wallet</span>
+          <span className={cx("title", "d-block", "text-center", "my-4")}>Choose Your Wallet</span>
           {this.net()}
-          <p className={cx("d-block", "text-center", "mb-4")} style={{ color: "rgb(40, 47, 56)", fontSize: "16px", lineHeight: "18px" }}>Choose a wallet to fully access features</p>
           <div className={cx("wallets")}>
 
             <div className={cx("wallet", "hardware")}>
@@ -70,13 +69,11 @@ class SelectWallet extends Component {
           </div>
 
           <p
-            className={cx("d-block", "text-right", "mt-5", "mb-1", "skip-txt")}
+            className={cx("subtitle", "d-block", "text-right", "mt-5", "mb-1", "skip-txt")}
             style={{ cursor: "pointer" }}
-            style={{ color: "rgb(155, 155, 155)", fontSize: "16px", lineHeight: "18px" }}
           >Your wallet is not represented here</p>
           <button
-            className={cx("d-block", "mr-0", "btn", "btn-primary-gray", "btn-sm", "skip-btn")}
-            style={{ display: "block", margin: "8px auto 0px" }}
+            className={cx("d-block", "btn", "btn-primary-gray", "btn-sm", "skip-btn", "ml-auto", "my-2")}
             onClick={window.kambriaWallet.back}
           >Try it on another Blockchain</button>
         </div>

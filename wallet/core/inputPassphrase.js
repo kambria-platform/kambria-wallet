@@ -72,7 +72,7 @@ class InputPassphrase extends Component {
         <div className={cx("modal-body")}>
           <button type="button" className={cx("close-button")} onClick={() => { this.onClose() }}></button>
 
-          <span className={cx("title", "d-block", "text-center", "mt-4")} style={{ color: "black", fontSize: "24px" }}>Input Your Passphrase</span>
+          <span className={cx("title", "d-block", "text-center", "mt-4")}>Input Your Passphrase</span>
           <div className={cx("form-inline")}>
             <label htmlFor="passphrase">Passphrase</label>
             <div className={cx("form-group")}>

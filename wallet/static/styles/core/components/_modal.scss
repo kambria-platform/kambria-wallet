@@ -2,9 +2,24 @@
 .token-modal,
 .wallet-modal {
   span.title {
-    color: $c-base;
+    color: $c-semi-black;
     font-size: 24px;
     margin-bottom: 16px;
+    &.home {
+      color: $c-base;
+    }
+  }
+  p.subtitle {
+    font-size: 16px;
+    line-height: 18px;
+    margin-bottom: 16px;
+    color: $c-gray;
+    &.success {
+      color: $c-base !important;
+    }
+    &.fail {
+      color: $c-red !important;
+    }
   }
   label {
     color: $c-semi-black;
@@ -24,6 +39,7 @@
     margin-bottom: -32px;
     bottom: 8px;
     left: 8px;
+    padding: 0px;
     cursor: pointer;
     &:hover {
       background-color: rgba(0, 0, 0, 0.6);
@@ -220,7 +236,7 @@
       background-size: 14px;
       background-position: center left;
       height: 24px;
-      width: max-content;
+      width: 100%;
       padding-left: 24px;
       &.ethereum {
         background-image: url(../images/ethereum.png);
@@ -247,7 +263,7 @@
       background-position-y: center;
       background-position-x: left;
       height: 22px;
-      width: max-content;
+      width: 100%;
       padding-left: 24px;
     }
     .github {
@@ -346,7 +362,8 @@
         margin-top: 16px;
       }
     }
-    &.choose-wallet, &.choose-blockchain {
+    &.choose-wallet,
+    &.choose-blockchain {
       .modal-content {
         width: 320px;
         position: relative;
@@ -435,7 +452,8 @@
         margin-top: 16px;
       }
     }
-    &.choose-wallet, &.choose-blockchain {
+    &.choose-wallet,
+    &.choose-blockchain {
       .modal-content {
         width: 540px;
         position: relative;
@@ -502,7 +520,8 @@
 // Medium devices (tablets, less than 992px)
 @media (min-width: 768px) and (max-width: 991px) {
   .wallet-modal {
-    &.choose-wallet, &.choose-blockchain {
+    &.choose-wallet,
+    &.choose-blockchain {
       .modal-content {
         width: 640px;
         position: relative;
