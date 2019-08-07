@@ -42,7 +42,7 @@ class getAuthentication extends Component {
           <button type="button" className={cx("close-button")} onClick={() => { this.onClose() }}></button>
 
           <span className={cx("title", "d-block", "text-center", "mt-4")}>Authentication</span>
-          <p className={cx("subtitle", "d-block", "text-center", "mb-4")}>Please using your device to scan and establish the connection!</p>
+          <p className={cx("subtitle", "d-block", "text-center", "mb-4")}>Please use your device to scan and establish the connection!</p>
           <div className={cx("qr-code", "mx-auto", "my-5")}>
             {this.state.qrcode ? <QRCode size={200} value={this.state.qrcode} /> : null}
           </div>

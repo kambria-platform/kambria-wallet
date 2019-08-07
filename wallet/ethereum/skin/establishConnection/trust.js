@@ -8,7 +8,7 @@ import styles from '../../../static/styles/index.module.css';
 var cx = classNames.bind(styles);
 
 const STATUS = {
-  INIT: 'Please using Trust Wallet application on your phone to scan and establish the connection!',
+  INIT: 'Please use Trust Wallet application on your phone to scan and establish the connection!',
   TEST: 'Waiting for the connection...',
   FAIL: 'Cannot connect the devide!'
 }

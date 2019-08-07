@@ -7,7 +7,7 @@ import styles from '../../../static/styles/index.module.css';
 var cx = classNames.bind(styles);
 
 const STATUS = {
-  INIT: 'Please connecting your wallet and click the button!',
+  INIT: 'Please connect your wallet and click the button!',
   TEST: 'Waiting for the connection...',
   FAIL: 'Cannot connect your wallet!'
 }
