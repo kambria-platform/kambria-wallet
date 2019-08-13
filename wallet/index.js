@@ -139,7 +139,7 @@ class KambriaWallet extends Component {
 
   render() {
     return (
-      <Fragment>
+      <Fragment className="kambria-wallet">
         <Modal visible={this.state.visible} className={cx("fade", "wallet-modal", "choose-blockchain")} dialogClassName={cx("modal-dialog-centered")}>
           <div className={cx("modal-body")}>
             <button type="button" className={cx("close-button")} onClick={this.onClose} />
