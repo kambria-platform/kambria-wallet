@@ -60,8 +60,8 @@ class KambriaWallet extends Component {
     window.kambriaWallet.github = () => {
       window.open('https://github.com/kambria-platform/kambria-wallet', '_blank');
     }
-    window.kambriaWallet.term = () => {
-      window.open('https://github.com/kambria-platform/kambria-wallet/blob/master/LICENSE', '_blank');
+    window.kambriaWallet.privacy = () => {
+      window.open('https://kambria.io/privacy-policy/', '_blank');
     }
     window.kambriaWallet.support = () => {
       window.open('mailto:support@kambria.io', '_blank');
@@ -164,12 +164,12 @@ class KambriaWallet extends Component {
               className={cx("position-absolute", "d-block", "text-left", "mt-5", "mb-1", "github")}
               style={{ cursor: "pointer" }}
               onClick={window.kambriaWallet.github}
-            >GitHub Repository</span>
+            >Github Repository</span>
             <span
               className={cx("position-absolute", "d-block", "text-left", "mt-5", "mb-1", "term")}
               style={{ cursor: "pointer" }}
-              onClick={window.kambriaWallet.term}
-            >Terms and Conditions</span>
+              onClick={window.kambriaWallet.privacy}
+            >Privacy Policy</span>
             <span
               className={cx("position-absolute", "d-block", "text-left", "mt-5", "mb-1", "support")}
               style={{ cursor: "pointer" }}
