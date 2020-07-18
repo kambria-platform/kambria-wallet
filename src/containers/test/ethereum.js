@@ -19,20 +19,21 @@ class Ethereum extends Component {
   }
 
   sendTx = () => {
-    if (window.kambriaWallet.provider) window.kambriaWallet.provider.web3.eth.sendTransaction({
-      from: this.state.account,
-      to: this.state.account,
-      value: '1000000000000000',
-    }, (er, txId) => {
-      if (er) return console.error(er);
-      return this.setState({ txId: txId.toString(), error: null });
-    });
+    if (window.kambriaWallet.provider)
+      return window.kambriaWallet.provider.web3.eth.sendTransaction({
+        from: this.state.account,
+        to: this.state.account,
+        value: '1000000000000000',
+      }, (er, txId) => {
+        if (er) return console.error(er);
+        return this.setState({ txId: txId.toString(), error: null });
+      });
   }
 
   senErc20Tx = () => {
     if (window.kambriaWallet.provider) {
-      var token = new Token('0x9dddff7752e1714c99edf940ae834f0d57d68546', window.kambriaWallet.provider.web3);
-      token.transfer(this.state.account, '1000000000000000000').then(txId => {
+      const token = new Token('0x9dddff7752e1714c99edf940ae834f0d57d68546', window.kambriaWallet.provider.web3);
+      return token.transfer(this.state.account, '1000000000000000000').then(txId => {
         return this.setState({ txId: txId.toString(), error: null });
       }).catch(er => {
         if (er) return console.error(er);

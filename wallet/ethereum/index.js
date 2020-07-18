@@ -91,7 +91,7 @@ class Ethereum extends Component {
 
     // Heros are working :)
     // Move to next step
-    let state = this.FSM.next(re);
+    const state = this.FSM.next(re);
 
     // Run to next step
     // Error case

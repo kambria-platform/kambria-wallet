@@ -9,7 +9,7 @@ class Web3Factory {
 
       // Metamask
       case 'metamask':
-        let metamask = new Metamask(window.kambriaWallet.networkId.ethereum);
+        const metamask = new Metamask(window.kambriaWallet.networkId.ethereum);
         return metamask.setAccountByMetamask((er, re) => {
           if (er) return callback(er, null);
           return callback(null, metamask);
@@ -17,11 +17,11 @@ class Web3Factory {
 
       // Ledger
       case 'ledger':
-        let ledgerOptions = {
+        const ledgerOptions = {
           getApproval: window.kambriaWallet.getApproval,
           getWaiting: window.kambriaWallet.getWaiting
         }
-        let ledger = new Ledger(window.kambriaWallet.networkId.ethereum, ledgerOptions);
+        const ledger = new Ledger(window.kambriaWallet.networkId.ethereum, ledgerOptions);
         switch (fmState.model) {
           case 'ledger-nano-s':
             return ledger.setAccountByLedgerNanoS(fmState.dpath, fmState.index, (er, re) => {
@@ -34,11 +34,11 @@ class Web3Factory {
 
       // Trezor
       case 'trezor':
-        let trezorOptions = {
+        const trezorOptions = {
           getApproval: window.kambriaWallet.getApproval,
           getWaiting: window.kambriaWallet.getWaiting
         }
-        let trezor = new Trezor(window.kambriaWallet.networkId.ethereum, trezorOptions);
+        const trezor = new Trezor(window.kambriaWallet.networkId.ethereum, trezorOptions);
         switch (fmState.model) {
           case 'trezor-one':
             return trezor.setAccountByTrezorOne(fmState.dpath, fmState.index, (er, re) => {
@@ -59,11 +59,11 @@ class Web3Factory {
 
       // Isoxys
       case 'isoxys':
-        let isoxysOptions = {
+        const isoxysOptions = {
           getApproval: window.kambriaWallet.getApproval,
           getPassphrase: window.kambriaWallet.getPassphrase
         }
-        let isoxys = new Isoxys(window.kambriaWallet.networkId.ethereum, isoxysOptions);
+        const isoxys = new Isoxys(window.kambriaWallet.networkId.ethereum, isoxysOptions);
         switch (fmState.model) {
           case 'mnemonic':
             return isoxys.setAccountByMnemonic(
@@ -105,7 +105,7 @@ class Web3Factory {
 
       // Metamask
       case 'metamask':
-        let metamask = new Metamask(window.kambriaWallet.networkId.ethereum);
+        const metamask = new Metamask(window.kambriaWallet.networkId.ethereum);
         return metamask.setAccountByMetamask((er, re) => {
           if (er) return callback(er, null);
           return callback(null, metamask);
@@ -113,11 +113,11 @@ class Web3Factory {
 
       // Ledger
       case 'ledger':
-        let ledgerOptions = {
+        const ledgerOptions = {
           getApproval: window.kambriaWallet.getApproval,
           getWaiting: window.kambriaWallet.getWaiting
         }
-        let ledger = new Ledger(window.kambriaWallet.networkId.ethereum, ledgerOptions);
+        const ledger = new Ledger(window.kambriaWallet.networkId.ethereum, ledgerOptions);
         switch (fmState.model) {
           case 'ledger-nano-s':
             return ledger.setAccountByLedgerNanoS(fmState.dpath, fmState.index, (er, re) => {
@@ -130,11 +130,11 @@ class Web3Factory {
 
       // Trezor
       case 'trezor':
-        let trezorOptions = {
+        const trezorOptions = {
           getApproval: window.kambriaWallet.getApproval,
           getWaiting: window.kambriaWallet.getWaiting
         }
-        let trezor = new Trezor(window.kambriaWallet.networkId.ethereum, trezorOptions);
+        const trezor = new Trezor(window.kambriaWallet.networkId.ethereum, trezorOptions);
         switch (fmState.model) {
           case 'trezor-one':
             return trezor.setAccountByTrezorOne(fmState.dpath, fmState.index, (er, re) => {
@@ -147,11 +147,11 @@ class Web3Factory {
 
       // Trust Wallet
       case 'trust':
-        let trustOptions = {
+        const trustOptions = {
           getApproval: window.kambriaWallet.getApproval,
           getAuthentication: window.kambriaWallet.getAuthentication
         }
-        let trust = new Trust(window.kambriaWallet.networkId.ethereum, trustOptions);
+        const trust = new Trust(window.kambriaWallet.networkId.ethereum, trustOptions);
         return trust.setAccountByTrustWallet((er, re) => {
           if (er) return callback(er, null);
           return callback(null, trust);
@@ -159,11 +159,11 @@ class Web3Factory {
 
       // My Ether Wallet
       case 'mew':
-        let mewOptions = {
+        const mewOptions = {
           getApproval: window.kambriaWallet.getApproval,
           getAuthentication: window.kambriaWallet.getAuthentication
         }
-        let mew = new MEW(window.kambriaWallet.networkId.ethereum, mewOptions);
+        const mew = new MEW(window.kambriaWallet.networkId.ethereum, mewOptions);
         return mew.setAccountByMEW((er, re) => {
           if (er) return callback(er, null);
           return callback(null, trust);
@@ -171,11 +171,11 @@ class Web3Factory {
 
       // Isoxys
       case 'isoxys':
-        let isoxysOptions = {
+        const isoxysOptions = {
           getApproval: window.kambriaWallet.getApproval,
           getPassphrase: window.kambriaWallet.getPassphrase
         }
-        let isoxys = new Isoxys(window.kambriaWallet.networkId.ethereum, isoxysOptions);
+        const isoxys = new Isoxys(window.kambriaWallet.networkId.ethereum, isoxysOptions);
         return isoxys.setWallet({}, (er, re) => {
           if (er) return callback(er, null);
           return callback(null, isoxys);

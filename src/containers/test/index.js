@@ -27,38 +27,36 @@ class Test extends Component {
   }
 
   register = () => {
-    this.setState({ visible: false }, () => {
-      this.setState({ visible: true });
+    return this.setState({ visible: false }, () => {
+      return this.setState({ visible: true });
     });
   }
 
   logout = () => {
-    this.setState({ ...DEFAULT_STATE }, () => {
-      window.kambriaWallet.logout();
+    return this.setState({ ...DEFAULT_STATE }, () => {
+      return window.kambriaWallet.logout();
     });
   }
 
   done = (er, re) => {
     if (er) return console.error(er);
     if (!re) return console.error('Use skip the registration');
-    this.setState({ blockchain: re.blockchain });
+    return this.setState({ blockchain: re.blockchain });
   }
 
   componentWillUnmount() {
-    if (this.watcher) this.watcher.stopWatching();
+    if (this.watcher) return this.watcher.stopWatching();
   }
 
   render() {
-    return (
-      <div>
-        <h1>Wallet testing</h1>
-        <h2>Blockchain: {this.state.blockchain}</h2>
-        {this.state.blockchain ? <button onClick={this.logout}>Logout</button> : <button onClick={this.register}>Register</button>}
-        {this.state.blockchain === 'ethereum' ? <Ethereum /> : null}
-        {this.state.blockchain === 'binance' ? <Binance /> : null}
-        <Wallet visible={this.state.visible} options={this.options} done={this.done} />
-      </div>
-    );
+    return <div>
+      <h1>Wallet testing</h1>
+      <h2>Blockchain: {this.state.blockchain}</h2>
+      {this.state.blockchain ? <button onClick={this.logout}>Logout</button> : <button onClick={this.register}>Register</button>}
+      {this.state.blockchain === 'ethereum' ? <Ethereum /> : null}
+      {this.state.blockchain === 'binance' ? <Binance /> : null}
+      <Wallet visible={this.state.visible} options={this.options} done={this.done} />
+    </div>
   }
 }
 

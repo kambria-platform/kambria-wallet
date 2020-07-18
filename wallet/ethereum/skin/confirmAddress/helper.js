@@ -1,4 +1,5 @@
 var { NonWallet, Isoxys, Ledger, Trezor } = require('capsule-core-js');
+import { unit } from '@kambria/kambria-util';
 
 const ERROR = 'Cannot load addresses';
 
@@ -106,7 +107,7 @@ class Helper {
 
         web3.eth.getBalance(address, (er, re) => {
           if (er) return reject(er);
-          return resolve(web3.fromWei(re.toString(), 'ether'));
+          return resolve(unit.wei2ETH(re.toString()));
         });
       });
     });
