@@ -8,23 +8,19 @@ var cx = classNames.bind(styles);
 
 
 class ErrorForm extends Component {
-  constructor(props) {
-    super(props);
-
-    this.done = props.done;
-  }
 
   render() {
+    console.log(this.props.error)
     return (
       <Modal visible={true} className={cx("fade", "wallet-modal", "enter-passphrase")} dialogClassName={cx("modal-dialog-centered")}>
         <div className={cx("modal-body")}>
-          <button type="button" className={cx("close-button")} onClick={this.done}></button>
+          <button type="button" className={cx("close-button")} onClick={this.props.done}></button>
 
           <span className={cx("title", "d-block", "text-center", "mt-4")}>An error has occurred</span>
-          <p className={cx("subtitle", "d-block", "text-center", "mb-4")}>{this.props.error}</p>
+          <p className={cx("subtitle", "d-block", "text-center", "mb-4")}>{String(this.props.error)}</p>
           <button
             className={cx("btn", "btn-sm", "btn-primary", "d-block", "text-center", "mx-auto")}
-            onClick={this.done}>OK</button>
+            onClick={this.props.done}>OK</button>
         </div>
       </Modal>
     );

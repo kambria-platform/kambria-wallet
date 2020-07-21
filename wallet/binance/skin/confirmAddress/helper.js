@@ -1,4 +1,4 @@
-var { BnbClient, BinanceSDK, Ledger } = require('binance-core-js');
+var { BncClient, BinanceSDK, Ledger } = require('binance-core-js');
 var rpc = require('binance-core-js/dist/provider/rpc');
 
 const ERROR = 'Cannot load addresses';
@@ -73,10 +73,10 @@ class Helper {
   }
 
   static getBalance(address) {
-    let bnbClient = new BnbClient(rpc.getRPC(window.kambriaWallet.networkId.binance));
-    bnbClient.chooseNetwork(rpc.getNetwork(window.kambriaWallet.networkId.binance));
+    let client = new BncClient(rpc.getRPC(window.kambriaWallet.networkId.binance));
+    client.chooseNetwork(rpc.getNetwork(window.kambriaWallet.networkId.binance));
     return new Promise((resolve, reject) => {
-      bnbClient.getBalance(address).then(re => {
+      client.getBalance(address).then(re => {
         if (!re || re.length == 0) return reject('Cannot get balance');
         for (let i = 0; i < re.length; i++) {
           if (re[i].symbol == 'BNB') return resolve(re[i].free);

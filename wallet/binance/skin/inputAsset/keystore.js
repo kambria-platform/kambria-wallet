@@ -5,8 +5,7 @@ import classNames from 'classnames/bind';
 import styles from '../../../static/styles/index.module.css';
 var cx = classNames.bind(styles);
 
-var { BnbClient } = require('binance-core-js');
-var crypto = BnbClient.crypto;
+var { BncClient } = require('binance-core-js');
 
 const DEFAULT_STATE = {
   filename: '',
@@ -57,7 +56,7 @@ class KeystoreAsset extends Component {
     this.setState({ loading: true }, () => {
       // Fetch the first address to know whether good file
       try {
-        let priv = crypto.getPrivateKeyFromKeyStore(this.state.keystore, this.state.password);
+        let priv = BncClient.crypto.getPrivateKeyFromKeyStore(this.state.keystore, this.state.password);
         this.setState({ loading: false });
         if (!priv) return callback(false);
         return callback(true);
