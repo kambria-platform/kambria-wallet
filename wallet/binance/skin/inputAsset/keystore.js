@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
+import { BinanceSDK } from 'binance-core-js';
 
 // Setup CSS Module
 import classNames from 'classnames/bind';
 import styles from '../../../static/styles/index.module.css';
 var cx = classNames.bind(styles);
-
-var { BncClient } = require('binance-core-js');
 
 const DEFAULT_STATE = {
   filename: '',
@@ -55,15 +54,17 @@ class KeystoreAsset extends Component {
   checkKeystore = (callback) => {
     this.setState({ loading: true }, () => {
       // Fetch the first address to know whether good file
-      try {
-        let priv = BncClient.crypto.getPrivateKeyFromKeyStore(this.state.keystore, this.state.password);
-        this.setState({ loading: false });
-        if (!priv) return callback(false);
-        return callback(true);
-      } catch (er) {
-        this.setState({ loading: false });
-        if (er) return callback(false);
+      let { keystore, password } = this.state;
+      let options = {
+        getApproval: window.kambriaWallet.getApproval,
+        getPassphrase: window.kambriaWallet.getPassphrase
       }
+      let binanceSDK = new BinanceSDK(window.kambriaWallet.networkId.binance, options);
+      binanceSDK.getAccountByKeystore(keystore, password, (er, address) => {
+        if (er || !address) callback(false);
+        else callback(true);
+        return this.setState({ loading: false });
+      });
     });
   }
 
@@ -88,7 +89,7 @@ class KeystoreAsset extends Component {
         <div className={cx("form-group")}>
           <label htmlFor="upload-keystore">Upload Keystore</label>
           <div className={cx("form-inline")}>
-            <input id="keystore-file" type="file" accept=".txt" onChange={this.handleChangeFile} style={{ "display": "none" }} />
+            <input id="keystore-file" type="file" accept="application/json" onChange={this.handleChangeFile} style={{ "display": "none" }} />
             <input className={cx("form-control", "col-6", "col-md-8", "mr-auto")} type="text" id="upload-keystore" value={this.state.filename} disabled />
             <button
               className={cx("btn", "btn-sm", "btn-primary-gray", "text-center", "col-5", "col-md-3")}

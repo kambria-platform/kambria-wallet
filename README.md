@@ -17,7 +17,7 @@ npm install --save @kambria/kambria-wallet
 
 ## Prequisitions (In case you would like to install web3 by yourself)
 
-* Install web3: ***Must be 0.20.x verison.***
+* Install web3: ***Must be 1.x verison.***
 
 ```
 npm install web3@1.x
