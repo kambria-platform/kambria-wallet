@@ -1,6 +1,6 @@
 {
   "name": "@kambria/kambria-wallet",
-  "version": "4.1.5",
+  "version": "4.1.6",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
   "dependencies": {
     "@kambria/kambria-contract": "^1.1.2",
     "@kambria/kambria-util": "^1.0.10",
-    "binance-core-js": "^1.2.3",
+    "binance-core-js": "^1.2.4",
     "capsule-core-js": "^1.2.8",
     "classnames": "^2.2.6",
     "qrcode.react": "^0.9.3",
