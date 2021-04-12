@@ -26,39 +26,20 @@ class GetApproval extends Component {
     if (!txParams) return this.setState({ ...DEFAULT_STATE });
 
     let data = [];
-    // Ethereum
-    if (!txParams.inputs) {
-      let from = txParams.from;
-      let to = '';
-      let coin = 'ETH';
-      let amount = txParams.value ? unit.wei2ETH(txParams.value) : 0;
-      let tokens = [];
-      if (!txParams.data) to = txParams.to;
-      else {
-        let raw = net.parseKambriaTransaction(txParams);
-        if (raw) {
-          to = raw.to;
-          tokens = [{ token: 'KAT', amount: unit.wkat2KAT(raw.amount) }]
-        }
-      }
-      data.push({ from, to, coin, amount, tokens });
-    }
-    // Binance
+    let from = txParams.from;
+    let to = '';
+    let coin = 'ETH';
+    let amount = txParams.value ? unit.wei2ETH(txParams.value) : 0;
+    let tokens = [];
+    if (!txParams.data) to = txParams.to;
     else {
-      let from = txParams.inputs[0].address;
-      for (let i in txParams.outputs) {
-        let to = txParams.outputs[i].address;
-        let coin = 'BNB';
-        let amount = 0;
-        let coins = txParams.outputs[i].coins;
-        let tokens = [];
-        for (let coin of coins) {
-          if (coin.denom === 'BNB') amount = unit.jager2BNB(coin.amount);
-          else tokens.push({ token: coin.denom, amount: unit.jbkat2BKAT(coin.amount) });
-        }
-        data.push({ from, to, coin, amount, tokens });
+      let raw = net.parseKambriaTransaction(txParams);
+      if (raw) {
+        to = raw.to;
+        tokens = [{ token: 'KAT', amount: unit.wkat2KAT(raw.amount) }]
       }
     }
+    data.push({ from, to, coin, amount, tokens });
     return this.setState({ data: data });
   }
 

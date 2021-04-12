@@ -70,7 +70,6 @@ const MACHINE = {
  */
 const DEFAULT = {
   step: STATE[0],
-  blockchain: 'ethereum',
   type: null, // softwallet, hardwallet, hybridwallet
   wallet: null, // metamask, isoxys, ledger, trezor, mew
   model: null, // mnemonic, keystore, private-key, ledger-nano-s, trezor-one, mew

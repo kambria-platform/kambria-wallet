@@ -10,7 +10,6 @@ var cx = classNames.bind(styles);
 class ErrorForm extends Component {
 
   render() {
-    console.log(this.props.error)
     return (
       <Modal visible={true} className={cx("fade", "wallet-modal", "enter-passphrase")} dialogClassName={cx("modal-dialog-centered")}>
         <div className={cx("modal-body")}>

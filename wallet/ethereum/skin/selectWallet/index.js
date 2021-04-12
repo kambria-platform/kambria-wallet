@@ -5,9 +5,9 @@ import Modal from '../../../core/modal';
 // Setup CSS Module
 import classNames from 'classnames/bind';
 import styles from '../../../static/styles/index.module.css';
-var cx = classNames.bind(styles);
+const cx = classNames.bind(styles);
 
-var util = require('capsule-core-js/dist/util');
+const util = require('capsule-core-js/dist/util');
 
 
 class SelectWallet extends Component {
@@ -52,48 +52,37 @@ class SelectWallet extends Component {
   }
 
   render() {
-    return (
-      <Modal visible={true} className={cx("fade", "wallet-modal", "choose-wallet")} dialogClassName={cx("modal-dialog-centered")}>
-        <div className={cx("modal-body")}>
-          <button type="button" className={cx("close-button")} onClick={this.onClose} />
+    return <Modal visible={true} className={cx("fade", "wallet-modal", "choose-wallet")} dialogClassName={cx("modal-dialog-centered")}>
+      <div className={cx("modal-body")}>
+        <button type="button" className={cx("close-button")} onClick={this.onClose} />
 
-          <span className={cx("title", "d-block", "text-center", "my-4")}>Choose Your Wallet</span>
-          {this.net()}
-          <div className={cx("wallets")}>
+        <span className={cx("title", "d-block", "text-center", "my-4")}>Choose Your Wallet</span>
+        {this.net()}
+        <div className={cx("wallets")}>
 
-            <div className={cx("wallet", "metamask")}>
-              <div className={cx("icon")}></div>
-              <button className={cx("btn", "btn-gray", "btn-sm")} onClick={this.onMetamask}>Metamask</button>
-            </div>
-
-            <div className={cx("wallet", "hardware")}>
-              <div className={cx("icon")}></div>
-              <button className={cx("btn", "btn-gray", "btn-sm")} onClick={this.onHardwallet}>Hardware Wallet</button>
-            </div>
-
-            <div className={cx("wallet", "hybrid")}>
-              <div className={cx("icon")}></div>
-              <button className={cx("btn", "btn-gray", "btn-sm")} onClick={this.onHybridwallet}>Hybrid Wallet</button>
-            </div>
-
-            <div className={cx("wallet", "software")}>
-              <div className={cx("icon")}></div>
-              <button className={cx("btn", "btn-gray", "btn-sm")} onClick={this.onSoftwallet}>Software Wallet</button>
-            </div>
-
+          <div className={cx("wallet", "metamask")}>
+            <div className={cx("icon")}></div>
+            <button className={cx("btn", "btn-gray", "btn-sm")} onClick={this.onMetamask}>Metamask</button>
           </div>
 
-          <p
-            className={cx("subtitle", "d-block", "text-right", "mt-5", "mb-1", "skip-txt")}
-            style={{ cursor: "pointer" }}
-          >Your wallet is not represented here</p>
-          <button
-            className={cx("d-block", "btn", "btn-primary-gray", "btn-sm", "skip-btn", "ml-auto", "my-2")}
-            onClick={window.kambriaWallet.back}
-          >Try it on another Blockchain</button>
+          <div className={cx("wallet", "hardware")}>
+            <div className={cx("icon")}></div>
+            <button className={cx("btn", "btn-gray", "btn-sm")} onClick={this.onHardwallet}>Hardware Wallet</button>
+          </div>
+
+          <div className={cx("wallet", "hybrid")}>
+            <div className={cx("icon")}></div>
+            <button className={cx("btn", "btn-gray", "btn-sm")} onClick={this.onHybridwallet}>Hybrid Wallet</button>
+          </div>
+
+          <div className={cx("wallet", "software")}>
+            <div className={cx("icon")}></div>
+            <button className={cx("btn", "btn-gray", "btn-sm")} onClick={this.onSoftwallet}>Software Wallet</button>
+          </div>
+
         </div>
-      </Modal>
-    );
+      </div>
+    </Modal>
   }
 }
 

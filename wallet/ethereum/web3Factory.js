@@ -1,4 +1,4 @@
-var { Metamask, Ledger, Trezor, Trust, MEW, Isoxys } = require('capsule-core-js');
+const { Metamask, Ledger, Trezor, Trust, MEW, Isoxys } = require('capsule-core-js');
 
 const ERROR = 'Invalid state of finite state machine';
 

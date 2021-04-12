@@ -21,20 +21,8 @@ const ETHEREUM = {
   },
 }
 
-const BINANCE = {
-  MAINNET: {
-    id: 1,
-    explorer: ''
-  },
-  TESTNET: {
-    id: 2,
-    explorer: 'testnet-'
-  },
-}
-
 const config = {
   ethereum: ETHEREUM.RINKEBY,
-  binance: BINANCE.TESTNET
 }
 
 export default config;

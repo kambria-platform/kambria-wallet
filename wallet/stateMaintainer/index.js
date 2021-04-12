@@ -1,10 +1,8 @@
-var capsuleCoreMemmory = require('capsule-core-js/dist/storage').sessionStorage;
-var capsuleCoreCache = require('capsule-core-js/dist/storage').cache;
-var binanceCoreMemmory = require('binance-core-js/dist/storage').sessionStorage;
-var binanceCoreCache = require('binance-core-js/dist/storage').cache;
+const capsuleCoreMemmory = require('capsule-core-js/dist/storage').sessionStorage;
+const capsuleCoreCache = require('capsule-core-js/dist/storage').cache;
 
-var Porter = require('./porter');
-var beacon = require('./beacon');
+const Porter = require('./porter');
+const beacon = require('./beacon');
 
 const ADDRESS = require('./address');
 const STORAGE = window.localStorage;
@@ -26,14 +24,14 @@ class StateMaintainer {
   }
 
   getState = (callback) => {
-    let data = STORAGE.getItem(ADDRESS.MAINTAINER);
-    let maintainerData = JSON.parse(data);
+    const data = STORAGE.getItem(ADDRESS.MAINTAINER);
+    const maintainerData = JSON.parse(data);
     // Have no maintainer
-    if (!maintainerData || !maintainerData.blockchain) return callback(null);
+    if (!maintainerData) return callback(null);
     // Emit SHARE-DATA event
     this.porter.emitShareData();
     // Timeout to wait for sharing data
-    setTimeout(() => {
+    return setTimeout(() => {
       if (!beacon.get()) return callback(null);
       return callback(maintainerData);
     }, 1000);
@@ -45,7 +43,7 @@ class StateMaintainer {
     delete state.asset;
     delete state.provider;
     STORAGE.setItem(ADDRESS.MAINTAINER, JSON.stringify(state));
-    beacon.set();
+    return beacon.set();
   }
 
   clearState = () => {
@@ -59,41 +57,24 @@ class StateMaintainer {
 
   _newState = (data) => {
     for (let key in data) {
-      if (key == ADDRESS.CAPSULE_JS_MEMORY) {
-        capsuleCoreMemmory.set(data[key]);
-      }
-      else if (key == ADDRESS.CAPSULE_JS_CACHE) {
-        capsuleCoreCache.setAll(data[key]);
-      }
-      else if (key == ADDRESS.BINANCE_JS_MEMORY) {
-        binanceCoreMemmory.set(data[key]);
-      }
-      else if (key == ADDRESS.BINANCE_JS_CACHE) {
-        binanceCoreCache.setAll(data[key]);
-      }
-      else if (key == ADDRESS.BEACON) {
-        beacon.set();
-      }
+      if (key == ADDRESS.CAPSULE_JS_MEMORY) return capsuleCoreMemmory.set(data[key]);
+      if (key == ADDRESS.CAPSULE_JS_CACHE) return capsuleCoreCache.setAll(data[key]);
+      if (key == ADDRESS.BEACON) return beacon.set();
     }
   }
 
   _shareState = () => {
     let data = {};
     // Capsule
-    let capsuleMemoryData = capsuleCoreMemmory.get();
-    let capsuleCacheData = capsuleCoreCache.getAll();
+    const capsuleMemoryData = capsuleCoreMemmory.get();
+    const capsuleCacheData = capsuleCoreCache.getAll();
     if (capsuleMemoryData) data[ADDRESS.CAPSULE_JS_MEMORY] = capsuleMemoryData;
     if (capsuleCacheData) data[ADDRESS.CAPSULE_JS_CACHE] = capsuleCacheData;
-    // Binance
-    let binanceMemoryData = binanceCoreMemmory.get();
-    let binanceCacheData = binanceCoreCache.getAll();
-    if (binanceMemoryData) data[ADDRESS.BINANCE_JS_MEMORY] = binanceMemoryData;
-    if (binanceCacheData) data[ADDRESS.BINANCE_JS_CACHE] = binanceCacheData;
     // Beacon
-    let beaconData = beacon.get();
+    const beaconData = beacon.get();
     if (beaconData) data[ADDRESS.BEACON] = beaconData;
     // Share
-    this.porter.emitNewData(data);
+    return this.porter.emitNewData(data);
   }
 
   _clearState = () => {

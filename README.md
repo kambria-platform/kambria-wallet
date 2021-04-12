@@ -6,6 +6,7 @@ such as account management, transacion, contract, ...  With some restrictions of
 * In **VERSION 2.x.x**, the package starts to support React beside build-in zero clients.
 * In **VERSION 3.x.x**, the package starts to support mobile devides.
 * In **VERSION 4.x.x**, the package starts to support Binance chain.
+* In **VERSION 5.x.x**, remove Binance chain.
 
 ## Install
 
@@ -48,7 +49,6 @@ render() {
      pageRefreshing: <boolean> (true at default) - support browser to maintain the session when refreshing
      networkId: {
        ethereum: <number> - Ethereum network ID
-       binance: <number> - Binance network ID
      }
    }
    ```
@@ -79,7 +79,6 @@ class TestWallet extends Component {
       pageRefreshing: true,
       networkId: {
         ethereum: 4,
-        binance: 2
       }
     }
   }
@@ -93,9 +92,8 @@ class TestWallet extends Component {
   done = (er, re) => {
     if (er) return console.error(er)
     if (!re) return console.error('Use skip the registration');
-    let {blockchain, provider} = re;
+    let {provider} = re;
 
-    console.log('Blockchain name:', blockchain);
     provider.web3.eth.getCoinbase((er, account) => {
       if (er) return console.error(er);
       provider.web3.eth.getBalance(account, (er, balance) => {
@@ -145,7 +143,7 @@ export default TestWallet;
 
 ## The structure
 
-The `wallet` folder contains the main source code. It has 2 sub-folders - `ethereum` and `binance` - which are Ethereum source and Binance source respectively. Furthermore, `core` contains source code of re-used components, `static` contains static resouces and `stateMaintainer` is a hero helping to share state between multi browser windows.
+The `wallet` folder contains the main source code. The sub-folders, `ethereum`, is to contain Ethereum source. Furthermore, `core` contains source code of re-used components, `static` contains static resouces and `stateMaintainer` is a hero helping to share state between multi browser windows.
 
 The `src` folder contains test files. However, it can be viewed as an example, so
 to know how to use them, you can refer to `src/*` for details.
@@ -186,9 +184,6 @@ The app will be run on port 5000 with https and support hot-loading. (If the bro
 | Ethereum | Rinkeby | 4 |
 | Ethereum | Goerli  | 5 |
 | Ethereum | Kovan   | 42 |
-||
-| Binance | Mainnet  | 1 |
-| Binance | Testnet  | 2 |
 
 ### Commands
 

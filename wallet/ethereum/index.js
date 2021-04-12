@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 
 // Heros to operate and protect Kambria Bridge
 import StateMaintainer from '../stateMaintainer';
-import BrowserRereshing from './browserRefreshing';
+import BrowserRefreshing from './browserRefreshing';
 import FiniteStateMachine from './finiteStateMachine';
 import Web3Factory from './web3Factory';
 
@@ -55,12 +55,11 @@ class Ethereum extends Component {
     if (!this.options.pageRefreshing) return;
     // Regenerate state
     this.SM.isStateMaintained(state => {
-      if (state && state.blockchain === 'ethereum')
-        this.W3F.regenerate(state, (er, provider) => {
-          if (er) return window.kambriaWallet.logout();
-          window.kambriaWallet.provider = provider;
-          return this.done(null, provider);
-        });
+      if (state) return this.W3F.regenerate(state, (er, provider) => {
+        if (er) return window.kambriaWallet.logout();
+        window.kambriaWallet.provider = provider;
+        return this.done(null, provider);
+      });
     });
   }
 
@@ -88,18 +87,16 @@ class Ethereum extends Component {
   onData = (er, re) => {
     // User meets error in processing
     if (er) return this.onError(er);
-
     // Heros are working :)
     // Move to next step
     const state = this.FSM.next(re);
-
     // Run to next step
     // Error case
     if (state.step === 'Error') return this.onError(ERROR);
     // Success case
     if (state.step === 'Success') return this.onClose(() => {
       // Store state
-      if (this.options.pageRefreshing && BrowserRereshing.isSupported(state.model)) this.SM.setState(state);
+      if (this.options.pageRefreshing && BrowserRefreshing.isSupported(state.model)) this.SM.setState(state);
       this.W3F.generate(state, (er, provider) => {
         if (er) return this.onError(er);
         window.kambriaWallet.provider = provider;
@@ -112,15 +109,15 @@ class Ethereum extends Component {
 
   onError = (er) => {
     return this.setState({ visible: true, error: er, step: 'Error' }, () => {
-      this.FSM.reset();
+      return this.FSM.reset();
     });
   }
 
   onClose = (callback) => {
-    this.setState({ visible: true }, () => {
-      this.setState({ visible: false }, () => {
+    return this.setState({ visible: true }, () => {
+      return this.setState({ visible: false }, () => {
         this.setState({ ...DEFAULT_STATE }, () => {
-          this.FSM.reset();
+          return this.FSM.reset();
         });
         if (callback) callback();
       });
@@ -128,18 +125,17 @@ class Ethereum extends Component {
   }
 
   render() {
-    return (
-      <Fragment>
-        {this.state.step === 'SelectWallet' ? <SelectWallet data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
-        {this.state.step === 'InputAsset' ? <InputAsset data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
-        {this.state.step === 'EstablishConnection' ? <EstablishConnection data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
-        {this.state.step === 'ConnectDevice' ? <ConnectDevice data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
-        {this.state.step === 'ConfirmAddress' ? <ConfirmAddress data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
-        {this.state.step === 'Error' ? <ErrorForm error={this.state.error} done={() => this.onClose(() => { this.done(this.state.error, null) })} /> : null}
-      </Fragment>
-    );
+    const { step, error } = this.state;
+    return <Fragment>
+      {step === 'SelectWallet' ? <SelectWallet data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
+      {step === 'InputAsset' ? <InputAsset data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
+      {step === 'EstablishConnection' ? <EstablishConnection data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
+      {step === 'ConnectDevice' ? <ConnectDevice data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
+      {step === 'ConfirmAddress' ? <ConfirmAddress data={this.FSM.data} done={this.onData} onClose={() => this.onClose(this.done)} /> : null}
+      {step === 'Error' ? <ErrorForm error={error} done={() => this.onClose(() => this.done(error, null))} /> : null}
+    </Fragment>
   }
 
 }
 
-export default Ethereum; 
+export default Ethereum;
